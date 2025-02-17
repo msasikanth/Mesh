@@ -1,6 +1,7 @@
 package des.c5inco.mesh
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,8 +11,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -28,7 +32,11 @@ import kotlin.math.min
 @Composable
 @Preview
 fun App() {
+    var showPoints by remember { mutableStateOf(false) }
+    var resolution by remember { mutableStateOf(10) }
+
     MaterialTheme {
+        val Teal900 = Color(0xFF00796B)
         val Indigo700 = Color(0xFF3F51B5)
         val Magenta = Color(0xFFFF00FF)
 
@@ -36,7 +44,7 @@ fun App() {
             listOf(
                 Offset(0f, 0f) to Magenta,
                 Offset(.33f, 0f) to Magenta,
-                Offset(.67f, 0f) to Magenta,
+                Offset(.67f, 0f) to Teal900,
                 Offset(1f, 0f) to Magenta,
             ),
             listOf(
@@ -46,7 +54,7 @@ fun App() {
                 Offset(1f, .4f) to Indigo700,
             ),
             listOf(
-                Offset(0f, 1f) to Color.DarkGray,
+                Offset(0f, 1f) to Teal900,
                 Offset(.33f, 1f) to Color.DarkGray,
                 Offset(.67f, 1f) to Color.DarkGray,
                 Offset(1f, 1f) to Color.DarkGray,
@@ -56,11 +64,19 @@ fun App() {
         Surface {
             BoxWithConstraints(
                 Modifier
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onDoubleTap = {
+                                showPoints = !showPoints
+                            }
+                        )
+                    }
                     .background(Color.Black)
                     .meshGradient(
                         points = colors,
-                        resolutionX = 32,
-                        resolutionY = 32,
+                        resolutionX = resolution,
+                        resolutionY = resolution,
+                        showPoints = showPoints
                     )
             ) {
                 fun handlePointDrag(coordinate: Pair<Int, Int>, offsetX: Float, offsetY: Float) {
@@ -85,10 +101,11 @@ fun App() {
                     modifier = Modifier,
                     content = {
                         colors.forEachIndexed { rowIdx, row ->
-                            row.forEachIndexed { colIdx, _ ->
+                            row.forEachIndexed { colIdx, col ->
                                 PointCursor(
                                     xIndex = colIdx,
                                     yIndex = rowIdx,
+                                    color = col.second,
                                     modifier = Modifier.pointerInput(Unit) {
                                         detectDragGestures { change, dragAmount ->
                                             change.consume()
@@ -135,6 +152,7 @@ fun App() {
 fun PointCursor(
     xIndex: Int,
     yIndex: Int,
+    color: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -143,6 +161,9 @@ fun PointCursor(
             .size(32.dp)
             .drawWithContent {
                 drawContent()
+                drawCircle(
+                    color = color
+                )
                 drawCircle(
                     color = Color.White,
                     style = Stroke(width = 4.dp.toPx())
