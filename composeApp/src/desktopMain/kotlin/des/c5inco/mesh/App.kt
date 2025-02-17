@@ -1,12 +1,13 @@
 package des.c5inco.mesh
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -26,8 +28,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.math.min
-
 
 @Composable
 @Preview
@@ -72,12 +72,7 @@ fun App() {
                         )
                     }
                     .background(Color.Black)
-                    .meshGradient(
-                        points = colors,
-                        resolutionX = resolution,
-                        resolutionY = resolution,
-                        showPoints = showPoints
-                    )
+                    .padding(32.dp)
             ) {
                 fun handlePointDrag(coordinate: Pair<Int, Int>, offsetX: Float, offsetY: Float) {
                     val colorPoints = colors[coordinate.second]
@@ -98,24 +93,32 @@ fun App() {
                 }
 
                 Layout(
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .meshGradient(
+                            points = colors,
+                            resolutionX = resolution,
+                            resolutionY = resolution,
+                            showPoints = showPoints
+                        ),
                     content = {
-                        colors.forEachIndexed { rowIdx, row ->
-                            row.forEachIndexed { colIdx, col ->
-                                PointCursor(
-                                    xIndex = colIdx,
-                                    yIndex = rowIdx,
-                                    color = col.second,
-                                    modifier = Modifier.pointerInput(Unit) {
-                                        detectDragGestures { change, dragAmount ->
-                                            change.consume()
-                                            handlePointDrag(
-                                                coordinate = Pair(colIdx, rowIdx),
-                                                offsetX = dragAmount.x,
-                                                offsetY = dragAmount.y
-                                            )
-                                        }
-                                    })
+                        if (showPoints) {
+                            colors.forEachIndexed { rowIdx, row ->
+                                row.forEachIndexed { colIdx, col ->
+                                    PointCursor(
+                                        xIndex = colIdx,
+                                        yIndex = rowIdx,
+                                        color = col.second,
+                                        modifier = Modifier.pointerInput(Unit) {
+                                            detectDragGestures { change, dragAmount ->
+                                                change.consume()
+                                                handlePointDrag(
+                                                    coordinate = Pair(colIdx, rowIdx),
+                                                    offsetX = dragAmount.x,
+                                                    offsetY = dragAmount.y
+                                                )
+                                            }
+                                        })
+                                }
                             }
                         }
                     },
@@ -123,22 +126,27 @@ fun App() {
                         val placeables = measurables.map { measurable ->
                             measurable.measure(constraints)
                         }
+
                         layout(constraints.maxWidth, constraints.maxHeight) {
-                            val cursorWidth = placeables[0].width
-                            val cursorHeight = placeables[0].height
-                            val rows = colors.size
-                            val cols = colors[0].size
+                            if (placeables.isNotEmpty()) {
+                                val cursorWidth = placeables[0].width
+                                val cursorHeight = placeables[0].height
+                                val rows = colors.size
+                                val cols = colors[0].size
 
-                            placeables.forEachIndexed { i, placeable ->
-                                val row = i / cols
-                                val col = i % cols
+                                placeables.forEachIndexed { i, placeable ->
+                                    val row = i / cols
+                                    val col = i % cols
 
-                                val xOffset = colors[row][col].first.x
-                                val yOffset = colors[row][col].first.y
+                                    val xOffset = colors[row][col].first.x
+                                    val yOffset = colors[row][col].first.y
 
-                                val x = ((xOffset * (constraints.maxWidth)) - cursorWidth / 2).toInt()
-                                val y = ((yOffset * (constraints.maxHeight)) - cursorHeight / 2).toInt()
-                                placeable.place(x, y)
+                                    val x =
+                                        ((xOffset * (constraints.maxWidth)) - cursorWidth / 2).toInt()
+                                    val y =
+                                        ((yOffset * (constraints.maxHeight)) - cursorHeight / 2).toInt()
+                                    placeable.place(x, y)
+                                }
                             }
                         }
                     }
@@ -158,7 +166,7 @@ fun PointCursor(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(32.dp)
+            .size(24.dp)
             .drawWithContent {
                 drawContent()
                 drawCircle(

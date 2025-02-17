@@ -1,12 +1,16 @@
 package des.c5inco.mesh
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -16,9 +20,11 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.VertexMode
 import androidx.compose.ui.graphics.Vertices
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.unit.dp
 
 private val Teal950 = Color(0xFF00796B)
 private val Indigo700 = Color(0xFF3F51B5)
@@ -43,46 +49,57 @@ fun Modifier.meshGradient(
 
     return drawWithCache {
         onDrawBehind {
-            drawIntoCanvas { canvas ->
-                scale(
-                    scaleX = size.width,
-                    scaleY = size.height,
-                    pivot = Offset.Zero
-                ) {
-                    canvas.drawVertices(
-                        vertices = Vertices(
-                            vertexMode = VertexMode.Triangles,
-                            positions = pointData.offsets,
-                            textureCoordinates = pointData.offsets,
-                            colors = pointData.colors,
-                            indices = indicesModifier(pointData.indices)
-                        ),
-                        blendMode = blendMode,
-                        paint = paint,
-                    )
-                }
+            val roundRect = RoundRect(
+                left = 0f,
+                top = 0f,
+                right = size.width,
+                bottom = size.height,
+                cornerRadius = CornerRadius(16.dp.toPx())
+            )
 
-                if (showPoints) {
-                    val flattenedPaint = Paint()
-                    flattenedPaint.color = Color.White.copy(alpha = .9f)
-                    flattenedPaint.strokeWidth = 4f * .001f
-                    flattenedPaint.strokeCap = StrokeCap.Round
-                    flattenedPaint.blendMode = BlendMode.SrcOver
-
+            clipPath(Path().apply { addRoundRect(roundRect) }) {
+                drawIntoCanvas { canvas ->
                     scale(
                         scaleX = size.width,
                         scaleY = size.height,
                         pivot = Offset.Zero
                     ) {
-                        canvas.drawPoints(
-                            pointMode = PointMode.Points,
-                            points = pointData.offsets,
-                            paint = flattenedPaint
+                        canvas.drawVertices(
+                            vertices = Vertices(
+                                vertexMode = VertexMode.Triangles,
+                                positions = pointData.offsets,
+                                textureCoordinates = pointData.offsets,
+                                colors = pointData.colors,
+                                indices = indicesModifier(pointData.indices)
+                            ),
+                            blendMode = blendMode,
+                            paint = paint,
                         )
+                    }
+
+                    if (showPoints) {
+                        val flattenedPaint = Paint()
+                        flattenedPaint.color = Color.White.copy(alpha = .9f)
+                        flattenedPaint.strokeWidth = 4f * .001f
+                        flattenedPaint.strokeCap = StrokeCap.Round
+                        flattenedPaint.blendMode = BlendMode.SrcOver
+
+                        scale(
+                            scaleX = size.width,
+                            scaleY = size.height,
+                            pivot = Offset.Zero
+                        ) {
+                            canvas.drawPoints(
+                                pointMode = PointMode.Points,
+                                points = pointData.offsets,
+                                paint = flattenedPaint
+                            )
+                        }
                     }
                 }
             }
         }
+
     }
 }
 
