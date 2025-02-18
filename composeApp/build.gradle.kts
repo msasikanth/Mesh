@@ -6,6 +6,12 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+repositories {
+    maven("https://packages.jetbrains.team/maven/p/kpm/public/")
+    mavenCentral()
+    google()
+}
+
 kotlin {
     jvm("desktop")
     
@@ -15,7 +21,6 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -23,7 +28,12 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
         desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
+            // See https://github.com/JetBrains/Jewel/releases for the release notes
+            implementation("org.jetbrains.jewel:jewel-int-ui-standalone-243:0.27.0")
+
+            implementation(compose.desktop.currentOs) {
+                exclude(group = "org.jetbrains.compose.material")
+            }
             implementation(libs.kotlinx.coroutines.swing)
         }
     }
