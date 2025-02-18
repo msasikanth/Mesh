@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.dp
@@ -31,30 +29,7 @@ fun App() {
     val resolution by remember { MainViewModel::resolution }
     val constrainEdgePoints by remember { MainViewModel::constrainEdgePoints }
 
-    val Teal900 = Color(0xFF00796B)
-    val Indigo700 = Color(0xFF3F51B5)
-    val Magenta = Color(0xFFFF00FF)
-
-    val colors = remember { mutableStateListOf(
-        listOf(
-            Offset(0f, 0f) to Magenta,
-            Offset(.33f, 0f) to Magenta,
-            Offset(.67f, 0f) to Teal900,
-            Offset(1f, 0f) to Magenta,
-        ),
-        listOf(
-            Offset(0f, .4f) to Indigo700,
-            Offset(.33f, .8f) to Indigo700,
-            Offset(.67f, .8f) to Indigo700,
-            Offset(1f, .4f) to Indigo700,
-        ),
-        listOf(
-            Offset(0f, 1f) to Teal900,
-            Offset(.33f, 1f) to Color.DarkGray,
-            Offset(.67f, 1f) to Color.DarkGray,
-            Offset(1f, 1f) to Color.DarkGray,
-        ),
-    )}
+    val colors = remember { MainViewModel.colorPoints }
 
     Row(
         Modifier.fillMaxSize()
@@ -97,7 +72,7 @@ fun App() {
                 val newColorPoints = colorPoints.toMutableList()
                 newColorPoints.set(index = coordinate.first, element = newPoint)
 
-                colors.set(index = coordinate.second, element = newColorPoints.toList())
+                MainViewModel.colorPoints.set(index = coordinate.second, element = newColorPoints.toList())
             }
 
             Layout(

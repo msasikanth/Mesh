@@ -6,9 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import des.c5inco.mesh.common.formatFloat
+import des.c5inco.mesh.common.toHexString
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.CheckboxRow
@@ -37,6 +41,18 @@ fun SidePanel(
             checked = MainViewModel.constrainEdgePoints,
             onCheckedChange = { MainViewModel.constrainEdgePoints = it },
         )
+
+        LazyColumn {
+            itemsIndexed(MainViewModel.colorPoints) { index, colorPoints ->
+                Text("Color $index", style = Typography.h3TextStyle())
+                colorPoints.forEachIndexed { index, point ->
+                    Text(
+                        "x: ${formatFloat(point.first.x)}, y: ${formatFloat(point.first.y)} // ${point.second.toHexString()}",
+                        style = JewelTheme.editorTextStyle
+                    )
+                }
+            }
+        }
     }
 }
 
