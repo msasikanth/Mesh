@@ -34,6 +34,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App() {
     var showPoints by remember { mutableStateOf(false) }
     var resolution by remember { mutableStateOf(10) }
+    var constrainEdgePoints by remember { mutableStateOf(true) }
 
     MaterialTheme {
         val Teal900 = Color(0xFF00796B)
@@ -79,13 +80,23 @@ fun App() {
                     val currentPoint = colorPoints[coordinate.first]
                     val currentOffset = currentPoint.first
 
-                    val newPoint = Pair(
-                        Offset(
-                            x = (currentOffset.x + (offsetX / constraints.maxWidth)).coerceIn(0f, 1f),
-                            y = (currentOffset.y + (offsetY / constraints.maxHeight)).coerceIn(0f, 1f)
-                        ),
-                        currentPoint.second
-                    )
+                    var newX = (currentOffset.x + (offsetX / constraints.maxWidth)).coerceIn(0f, 1f)
+                    var newY = (currentOffset.y + (offsetY / constraints.maxHeight)).coerceIn(0f, 1f)
+
+                    if (constrainEdgePoints) {
+                        newX = when (coordinate.first) {
+                            0 -> 0f
+                            colorPoints.size - 1 -> 1f
+                            else -> newX
+                        }
+                        newY = when (coordinate.second) {
+                            0 -> 0f
+                            colors.size - 1 -> 1f
+                            else -> newY
+                        }
+                    }
+
+                    val newPoint = Pair(Offset(x = newX, y = newY), currentPoint.second)
                     val newColorPoints = colorPoints.toMutableList()
                     newColorPoints.set(index = coordinate.first, element = newPoint)
 
