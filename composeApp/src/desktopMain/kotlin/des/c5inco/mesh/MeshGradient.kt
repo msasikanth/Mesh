@@ -1,12 +1,10 @@
 package des.c5inco.mesh
 
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -25,11 +23,6 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
-
-private val Teal950 = Color(0xFF00796B)
-private val Indigo700 = Color(0xFF3F51B5)
-private val Pink500 = Color(0xFFEC407A)
-private val Magenta = Color(0xFFFF00FF)
 
 // Code from: https://gist.github.com/sinasamaki/05725557c945c5329fdba4a3494aaecb
 @Composable
