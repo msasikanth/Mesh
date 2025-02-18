@@ -8,18 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.dp
-import com.sun.tools.javac.Main
 import des.c5inco.mesh.common.PointCursor
 import des.c5inco.mesh.common.meshGradient
 import des.c5inco.mesh.ui.SidePanel
@@ -31,9 +27,9 @@ import org.jetbrains.jewel.ui.theme.colorPalette
 @Composable
 @Preview
 fun App() {
-    var showPoints by remember { MainViewModel::showPoints }
-    var resolution by remember { mutableStateOf(10) }
-    var constrainEdgePoints by remember { MainViewModel::constrainEdgePoints }
+    val showPoints by remember { MainViewModel::showPoints }
+    val resolution by remember { MainViewModel::resolution }
+    val constrainEdgePoints by remember { MainViewModel::constrainEdgePoints }
 
     val Teal900 = Color(0xFF00796B)
     val Indigo700 = Color(0xFF3F51B5)
