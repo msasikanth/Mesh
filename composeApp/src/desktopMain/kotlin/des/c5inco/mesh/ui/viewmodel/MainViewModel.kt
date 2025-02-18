@@ -39,6 +39,7 @@ object MainViewModel {
     var colorPoints = defaultColorPoints.toMutableStateList()
 
     fun resetColorPoints() {
-        colorPoints = defaultColorPoints.toMutableStateList()
+        colorPoints.clear()
+        colorPoints.addAll(defaultColorPoints)
     }
 }

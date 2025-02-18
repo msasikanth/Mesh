@@ -3,7 +3,9 @@ package des.c5inco.mesh.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +18,7 @@ import des.c5inco.mesh.common.toHexString
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.CheckboxRow
+import org.jetbrains.jewel.ui.component.Link
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.Typography
 
@@ -30,7 +33,19 @@ fun SidePanel(
         .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text("Configuration", style = Typography.h2TextStyle())
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = "Configuration",
+                style = Typography.h2TextStyle(),
+            )
+            Link(
+                text = "Reset",
+                onClick = MainViewModel::resetColorPoints,
+            )
+        }
         CheckboxRow(
             text = "Show points",
             checked = MainViewModel.showPoints,
