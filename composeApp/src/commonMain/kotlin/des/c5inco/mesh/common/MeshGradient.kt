@@ -1,4 +1,4 @@
-package des.c5inco.mesh
+package des.c5inco.mesh.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
