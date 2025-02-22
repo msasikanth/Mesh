@@ -59,7 +59,7 @@ fun SidePanel(
 
         LazyColumn {
             itemsIndexed(MainViewModel.colorPoints) { index, colorPoints ->
-                Text("Color $index", style = Typography.h3TextStyle())
+                Text("Row $index", style = Typography.h3TextStyle())
                 colorPoints.forEachIndexed { index, point ->
                     Text(
                         "x: ${formatFloat(point.first.x)}, y: ${formatFloat(point.first.y)} // ${point.second.toHexString()}",
