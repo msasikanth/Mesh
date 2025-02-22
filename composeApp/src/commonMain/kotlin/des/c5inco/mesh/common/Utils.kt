@@ -14,5 +14,5 @@ fun Color.toHexString(): String {
 }
 
 fun formatFloat(number: Float): String {
-    return number.toBigDecimal().setScale(3, RoundingMode.UP).stripTrailingZeros().toPlainString()
+    return number.toBigDecimal().setScale(4, RoundingMode.UP).stripTrailingZeros().toPlainString()
 }
