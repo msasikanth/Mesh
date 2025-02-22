@@ -27,8 +27,6 @@ import org.jetbrains.jewel.ui.theme.colorPalette
 fun App() {
     val showPoints by remember { MainViewModel::showPoints }
     val resolution by remember { MainViewModel::resolution }
-    val constrainEdgePoints by remember { MainViewModel::constrainEdgePoints }
-
     val colors = remember { MainViewModel.colorPoints }
 
     Row(
@@ -52,27 +50,14 @@ fun App() {
                 val currentPoint = colorPoints[coordinate.first]
                 val currentOffset = currentPoint.first
 
-                var newX = (currentOffset.x + (offsetX / constraints.maxWidth)).coerceIn(0f, 1f)
-                var newY = (currentOffset.y + (offsetY / constraints.maxHeight)).coerceIn(0f, 1f)
+                val x = (currentOffset.x + (offsetX / constraints.maxWidth)).coerceIn(0f, 1f)
+                val y = (currentOffset.y + (offsetY / constraints.maxHeight)).coerceIn(0f, 1f)
 
-                if (constrainEdgePoints) {
-                    newX = when (coordinate.first) {
-                        0 -> 0f
-                        colorPoints.size - 1 -> 1f
-                        else -> newX
-                    }
-                    newY = when (coordinate.second) {
-                        0 -> 0f
-                        colors.size - 1 -> 1f
-                        else -> newY
-                    }
-                }
-
-                val newPoint = Pair(Offset(x = newX, y = newY), currentPoint.second)
-                val newColorPoints = colorPoints.toMutableList()
-                newColorPoints.set(index = coordinate.first, element = newPoint)
-
-                MainViewModel.colorPoints.set(index = coordinate.second, element = newColorPoints.toList())
+                MainViewModel.updateColorPoint(
+                    col = coordinate.first,
+                    row = coordinate.second,
+                    point = Pair(Offset(x = x, y = y), currentPoint.second)
+                )
             }
 
             Layout(

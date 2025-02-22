@@ -38,6 +38,31 @@ object MainViewModel {
     var constrainEdgePoints by mutableStateOf(true)
     var colorPoints = defaultColorPoints.toMutableStateList()
 
+    fun updateColorPoint(col: Int, row: Int, point: Pair<Offset, Color>) {
+        val colorPointsInRow = colorPoints[row].toMutableList()
+
+        var newX = point.first.x
+        var newY = point.first.y
+
+        if (constrainEdgePoints) {
+            newX = when (col) {
+                0 -> 0f
+                colorPointsInRow.size - 1 -> 1f
+                else -> newX
+            }
+            newY = when (row) {
+                0 -> 0f
+                colorPoints.size - 1 -> 1f
+                else -> newY
+            }
+        }
+
+        val newPoint = Pair(Offset(x = newX, y = newY), point.second)
+        colorPointsInRow.set(index = col, element = newPoint)
+
+        colorPoints.set(index = row, element = colorPointsInRow.toList())
+    }
+
     fun resetColorPoints() {
         colorPoints.clear()
         colorPoints.addAll(defaultColorPoints)
