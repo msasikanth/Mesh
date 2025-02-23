@@ -81,11 +81,18 @@ fun SidePanel(
                 ) {
                     colorPoints.forEachIndexed { colIdx, point ->
                         ColorPointRow(
-                            row = rowIdx,
-                            col = colIdx,
                             x = point.first.x,
                             y = point.first.y,
+                            constrainX = MainViewModel.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
+                            constrainY = MainViewModel.constrainEdgePoints && (rowIdx == 0 || rowIdx == MainViewModel.colorPoints.size - 1),
                             color = point.second,
+                            onUpdatePoint = { (nextOffset, nextColor) ->
+                                MainViewModel.updateColorPoint(
+                                    col = colIdx,
+                                    row = rowIdx,
+                                    point = Pair(Offset(x = nextOffset.x, y = nextOffset.y), nextColor)
+                                )
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -97,21 +104,14 @@ fun SidePanel(
 
 @Composable
 fun ColorPointRow(
-    row: Int,
-    col: Int,
     x: Float,
     y: Float,
+    constrainX: Boolean,
+    constrainY: Boolean,
     color: Color,
+    onUpdatePoint: (Pair<Offset, Color>) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
-    fun updatePoint(nextX: Float, nextY: Float) {
-        MainViewModel.updateColorPoint(
-            col = col,
-            row = row,
-            point = Pair(Offset(x = nextX, y = nextY), color)
-        )
-    }
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -119,11 +119,13 @@ fun ColorPointRow(
     ) {
         OffsetInputField(
             value = x,
-            onUpdate = { updatePoint(it, y) }
+            enabled = !constrainX,
+            onUpdate = { onUpdatePoint(Pair(Offset(x = it, y = y), color)) }
         )
         OffsetInputField(
             value = y,
-            onUpdate = { updatePoint(x, it) }
+            enabled = !constrainY,
+            onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), color)) }
         )
         Text(
             color.toHexString(),
@@ -135,6 +137,7 @@ fun ColorPointRow(
 @Composable
 fun OffsetInputField(
     value: Float,
+    enabled: Boolean = false,
     onUpdate: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -155,10 +158,9 @@ fun OffsetInputField(
 
     TextField(
         state = textFieldState,
+        enabled = enabled,
         modifier = modifier
-            .onFocusChanged {
-                validate()
-            }
+            .onFocusChanged { validate() }
             .onKeyEvent {
                 when (it.key) {
                     Key.Enter,
