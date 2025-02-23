@@ -13,19 +13,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import des.c5inco.mesh.common.toHexString
+import des.c5inco.mesh.common.toColor
+import des.c5inco.mesh.common.toHexStringNoHash
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
 import des.c5inco.mesh.ui.views.ColorSwatch
 import des.c5inco.mesh.ui.views.OffsetInputField
@@ -123,7 +130,7 @@ fun SidePanel(
                             y = point.first.y,
                             constrainX = MainViewModel.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
                             constrainY = MainViewModel.constrainEdgePoints && (rowIdx == 0 || rowIdx == MainViewModel.colorPoints.size - 1),
-                            color = point.second,
+                            colorInt = point.second,
                             onUpdatePoint = { (nextOffset, nextColor) ->
                                 MainViewModel.updateColorPoint(
                                     col = colIdx,
@@ -144,13 +151,28 @@ fun SidePanel(
 private fun ColorInputRow(
     index: Int,
     color: Color,
+    modifier: Modifier = Modifier
 ) {
-    val textFieldState = remember(color) { TextFieldState(color.toHexString(false)) }
+    val textFieldState = remember(color) { TextFieldState(color.toHexStringNoHash(false)) }
     var hovered by remember { mutableStateOf(false) }
+
+    LaunchedEffect(color) {
+        snapshotFlow { textFieldState.text }
+            .collect {
+                try {
+                    val int = it.toString().toColor()
+                    MainViewModel.updateColor(index, int)
+                    println("converted: $int")
+                } catch (e: Exception) {
+                    println("fail")
+                    textFieldState.edit { replace(0, textFieldState.text.length, color.toHexStringNoHash(false)) }
+                }
+            }
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .onHover { hovered = !hovered }
             .fillMaxWidth()
     ) {
@@ -159,8 +181,9 @@ private fun ColorInputRow(
             leadingIcon = {
                 ColorSwatch(color = color, modifier = Modifier.padding(end = 8.dp))
             },
-            modifier = Modifier
-                .width(120.dp)
+            outputTransformation = HexColorVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
+            modifier = Modifier.width(120.dp)
         )
 
         if (hovered) {
@@ -177,14 +200,26 @@ private fun ColorInputRow(
     }
 }
 
+class HexColorVisualTransformation : OutputTransformation {
+    override fun TextFieldBuffer.transformOutput() {
+        val trimmed = originalText.toString().replace("#", "")
+        val formattedText = if (trimmed.length > 6) {
+            trimmed.substring(0, 6)
+        } else {
+            trimmed
+        }
+        replace(0, formattedText.length, formattedText)
+    }
+}
+
 @Composable
 private fun ColorPointRow(
     x: Float,
     y: Float,
     constrainX: Boolean,
     constrainY: Boolean,
-    color: Color,
-    onUpdatePoint: (Pair<Offset, Color>) -> Unit = { _ -> },
+    colorInt: Int,
+    onUpdatePoint: (Pair<Offset, Int>) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -192,18 +227,18 @@ private fun ColorPointRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        ColorSwatch(color = color)
+        ColorSwatch(color = MainViewModel.getColor(colorInt))
         OffsetInputField(
             value = x,
             enabled = !constrainX,
             paramName = "X",
-            onUpdate = { onUpdatePoint(Pair(Offset(x = it, y = y), color)) }
+            onUpdate = { onUpdatePoint(Pair(Offset(x = it, y = y), colorInt)) }
         )
         OffsetInputField(
             value = y,
             enabled = !constrainY,
             paramName = "Y",
-            onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), color)) }
+            onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), colorInt)) }
         )
     }
 }

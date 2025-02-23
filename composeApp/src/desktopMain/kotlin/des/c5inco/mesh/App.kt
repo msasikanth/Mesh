@@ -63,7 +63,11 @@ fun App() {
             Layout(
                 modifier = Modifier
                     .meshGradient(
-                        points = colors,
+                        points = colors.map { row ->
+                            row.map {
+                                it.first to MainViewModel.getColor(it.second)
+                            }
+                        },
                         resolutionX = resolution,
                         resolutionY = resolution,
                         showPoints = showPoints
@@ -75,7 +79,7 @@ fun App() {
                                 PointCursor(
                                     xIndex = colIdx,
                                     yIndex = rowIdx,
-                                    color = col.second,
+                                    color = MainViewModel.getColor(col.second),
                                     modifier = Modifier.pointerInput(Unit) {
                                         detectDragGestures { change, dragAmount ->
                                             change.consume()

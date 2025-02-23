@@ -16,22 +16,22 @@ private val defaultColors = listOf(
 
 private val defaultColorPoints = listOf(
     listOf(
-        Offset(0f, 0f) to defaultColors[0],
-        Offset(.33f, 0f) to defaultColors[0],
-        Offset(.67f, 0f) to defaultColors[2],
-        Offset(1f, 0f) to defaultColors[0],
+        Offset(0f, 0f) to 0,
+        Offset(.33f, 0f) to 0,
+        Offset(.67f, 0f) to 2,
+        Offset(1f, 0f) to 0,
     ),
     listOf(
-        Offset(0f, .4f) to defaultColors[1],
-        Offset(.33f, .8f) to defaultColors[1],
-        Offset(.67f, .8f) to defaultColors[1],
-        Offset(1f, .4f) to defaultColors[1],
+        Offset(0f, .4f) to 1,
+        Offset(.33f, .8f) to 1,
+        Offset(.67f, .8f) to 1,
+        Offset(1f, .4f) to 1,
     ),
     listOf(
-        Offset(0f, 1f) to defaultColors[2],
-        Offset(.33f, 1f) to defaultColors[3],
-        Offset(.67f, 1f) to defaultColors[3],
-        Offset(1f, 1f) to defaultColors[3],
+        Offset(0f, 1f) to 2,
+        Offset(.33f, 1f) to 3,
+        Offset(.67f, 1f) to 3,
+        Offset(1f, 1f) to 3,
     )
 )
 
@@ -41,6 +41,10 @@ object MainViewModel {
     var constrainEdgePoints by mutableStateOf(true)
     val colors = defaultColors.toMutableStateList()
     var colorPoints = defaultColorPoints.toMutableStateList()
+
+    fun getColor(index: Int): Color {
+        return colors.getOrElse(index) { _ -> defaultColors[0] }
+    }
 
     fun updateColor(index: Int, color: Color) {
         colors.set(index = index, element = color)
@@ -55,7 +59,7 @@ object MainViewModel {
         colors.addAll(defaultColors)
     }
 
-    fun updateColorPoint(col: Int, row: Int, point: Pair<Offset, Color>) {
+    fun updateColorPoint(col: Int, row: Int, point: Pair<Offset, Int>) {
         val colorPointsInRow = colorPoints[row].toMutableList()
 
         var newX = point.first.x
