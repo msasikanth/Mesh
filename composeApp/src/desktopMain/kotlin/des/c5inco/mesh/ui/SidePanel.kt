@@ -29,11 +29,16 @@ import des.c5inco.mesh.common.toHexString
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
 import des.c5inco.mesh.ui.views.ColorSwatch
 import des.c5inco.mesh.ui.views.OffsetInputField
+import mesh.composeapp.generated.resources.Res
+import mesh.composeapp.generated.resources.closeSmall
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.jewel.foundation.modifier.onHover
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
 import org.jetbrains.jewel.ui.component.CheckboxRow
 import org.jetbrains.jewel.ui.component.Divider
+import org.jetbrains.jewel.ui.component.Icon
+import org.jetbrains.jewel.ui.component.IconButton
 import org.jetbrains.jewel.ui.component.Link
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
@@ -160,16 +165,20 @@ private fun ColorInputRow(
 
         if (hovered) {
             Spacer(Modifier.weight(1f))
-            Link(
-                text = "Remove",
+            IconButton(
                 onClick = { MainViewModel.removeColor(index) }
-            )
+            ) {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.closeSmall),
+                    contentDescription = "Remove"
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ColorPointRow(
+private fun ColorPointRow(
     x: Float,
     y: Float,
     constrainX: Boolean,
