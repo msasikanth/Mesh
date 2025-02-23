@@ -32,8 +32,6 @@ fun PointCursor(
                     style = Stroke(width = 4.dp.toPx())
                 ) // Fill is transparent by default
             }
-//            .blur(radius = 16.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
-//            .background(Color.Black.copy(alpha = 0.4f))
     ) {
         Text("$xIndex,$yIndex", color = Color.White)
     }
