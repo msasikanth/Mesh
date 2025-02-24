@@ -47,6 +47,23 @@ object MainViewModel {
     }
 
     fun removeColor(index: Int) {
+        if (colors.size == 1) return
+
+        colorPoints.forEachIndexed { idx, points ->
+            val newPoints = points.mapIndexed { pidx, point ->
+                if (point.second == index) {
+                    // Reset to first color
+                    Pair(point.first, 0)
+                } else if (point.second > 0) {
+                    // Shift non-zero colors left
+                    Pair(point.first, point.second - 1)
+                } else {
+                    point
+                }
+            }
+
+            colorPoints.set(index = idx, element = newPoints.toList())
+        }
         colors.removeAt(index)
     }
 
