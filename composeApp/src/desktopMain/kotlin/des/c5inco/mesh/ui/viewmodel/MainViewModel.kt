@@ -46,10 +46,6 @@ object MainViewModel {
         return colors.getOrElse(index) { _ -> defaultColors[0] }
     }
 
-    fun updateColor(index: Int, color: Color) {
-        colors.set(index = index, element = color)
-    }
-
     fun removeColor(index: Int) {
         colors.removeAt(index)
     }

@@ -1,6 +1,7 @@
 package des.c5inco.mesh.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,10 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.OutputTransformation
-import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,8 +28,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -36,12 +42,14 @@ import des.c5inco.mesh.common.toHexStringNoHash
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
 import des.c5inco.mesh.ui.views.ColorSwatch
 import des.c5inco.mesh.ui.views.OffsetInputField
+import kotlinx.coroutines.flow.collectLatest
 import mesh.composeapp.generated.resources.Res
-import mesh.composeapp.generated.resources.closeSmall
+import mesh.composeapp.generated.resources.add_dark
+import mesh.composeapp.generated.resources.closeSmall_dark
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.jewel.foundation.modifier.onHover
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
+import org.jetbrains.jewel.ui.Outline
 import org.jetbrains.jewel.ui.component.CheckboxRow
 import org.jetbrains.jewel.ui.component.Divider
 import org.jetbrains.jewel.ui.component.Icon
@@ -97,14 +105,48 @@ fun SidePanel(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(16.dp),
         ) {
-            Text(
-                text = "Colors",
-                style = Typography.h4TextStyle(),
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            MainViewModel.colors.forEachIndexed { index, color ->
-                ColorInputRow(index, color)
+            var showColorInput by remember { mutableStateOf(false) }
+
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "Colors",
+                    style = Typography.h4TextStyle(),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                IconButton(
+                    onClick = { showColorInput = true }
+                ) {
+                    Icon(
+                        painter = painterResource(resource = Res.drawable.add_dark),
+                        contentDescription = "Add color"
+                    )
+                }
+            }
+
+            if (showColorInput) {
+                ColorInput(
+                    onCancel = { showColorInput = false },
+                    onSubmit = {
+                        showColorInput = false
+                        MainViewModel.colors.add(it)
+                    }
+                )
+            }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(6),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                itemsIndexed(MainViewModel.colors) { index, color ->
+                    ColorSwatch(
+                        color = color,
+                        modifier = Modifier.clickable { MainViewModel.removeColor(index) }
+                    )
+                }
             }
         }
 
@@ -148,67 +190,100 @@ fun SidePanel(
 }
 
 @Composable
-private fun ColorInputRow(
-    index: Int,
-    color: Color,
+private fun ColorInput(
+    onSubmit: (Color) -> Unit = {},
+    onCancel: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val textFieldState = remember(color) { TextFieldState(color.toHexStringNoHash(false)) }
-    var hovered by remember { mutableStateOf(false) }
+    var color: Color by remember { mutableStateOf(Color.LightGray) }
+    val textFieldState = remember { TextFieldState() }
+    var isColorValid by remember { mutableStateOf(true) }
 
-    LaunchedEffect(color) {
+    LaunchedEffect(Unit) {
         snapshotFlow { textFieldState.text }
-            .collect {
+            .collectLatest {
+                var text = it.toString()
+                if (text.startsWith(("#"))) {
+                    text = text.substring(1, 7)
+                    textFieldState.edit { replace(0, it.length, text) }
+                }
+
                 try {
-                    val int = it.toString().toColor()
-                    MainViewModel.updateColor(index, int)
-                    println("converted: $int")
+                    color = text.toColor()
+                    println("converted: $color")
                 } catch (e: Exception) {
                     println("fail")
-                    textFieldState.edit { replace(0, textFieldState.text.length, color.toHexStringNoHash(false)) }
                 }
             }
     }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .onHover { hovered = !hovered }
-            .fillMaxWidth()
-    ) {
-        TextField(
-            state = textFieldState,
-            leadingIcon = {
-                ColorSwatch(color = color, modifier = Modifier.padding(end = 8.dp))
-            },
-            outputTransformation = HexColorVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
-            modifier = Modifier.width(120.dp)
-        )
-
-        if (hovered) {
-            Spacer(Modifier.weight(1f))
-            IconButton(
-                onClick = { MainViewModel.removeColor(index) }
-            ) {
-                Icon(
-                    painter = painterResource(resource = Res.drawable.closeSmall),
-                    contentDescription = "Remove"
-                )
-            }
-        }
+    fun reset() {
+        textFieldState.edit { replace(0, textFieldState.text.length, color.toHexStringNoHash(false)) }
     }
-}
 
-class HexColorVisualTransformation : OutputTransformation {
-    override fun TextFieldBuffer.transformOutput() {
-        val trimmed = originalText.toString().replace("#", "")
+    fun validate(): Boolean {
+        val trimmed = textFieldState.text.toString().replace(Regex("[^A-Fa-f0-9]"), "")
         val formattedText = if (trimmed.length > 6) {
             trimmed.substring(0, 6)
         } else {
             trimmed
         }
-        replace(0, formattedText.length, formattedText)
+
+        try {
+            color = formattedText.toColor()
+            textFieldState.edit { replace(0, originalText.length, formattedText) }
+            println("converted: $color")
+            return true
+        } catch (e: Exception) {
+            reset()
+            println("fail")
+        }
+        return false
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        TextField(
+            state = textFieldState,
+            leadingIcon = {
+                ColorSwatch(
+                    color = color,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            },
+            outline = if (!isColorValid) Outline.Error else Outline.None,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
+            modifier = Modifier
+                .onFocusChanged { validate() }
+                .onKeyEvent {
+                    when (it.key) {
+                        Key.Enter -> {
+                            isColorValid = validate()
+                            if (isColorValid) onSubmit(color)
+                        }
+                        Key.Tab -> {
+                            isColorValid = validate()
+                            return@onKeyEvent false
+                        }
+                        Key.Escape -> {
+                            onCancel()
+                        }
+                    }
+                    return@onKeyEvent true
+                }
+                .weight(1f)
+        )
+        Spacer(Modifier.width(8.dp))
+        IconButton(
+            onClick = onCancel
+        ) {
+            Icon(
+                painter = painterResource(resource = Res.drawable.closeSmall_dark),
+                contentDescription = "Cancel"
+            )
+        }
     }
 }
 
