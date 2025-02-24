@@ -64,7 +64,6 @@ fun SidePanel(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier
-        .width(250.dp)
         .fillMaxHeight()
         .background(JewelTheme.globalColors.panelBackground),
     ) {
