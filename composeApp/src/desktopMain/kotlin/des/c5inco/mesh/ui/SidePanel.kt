@@ -68,39 +68,6 @@ fun SidePanel(
         .background(JewelTheme.globalColors.panelBackground),
     ) {
         Column(
-            Modifier.padding(16.dp),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                Text(
-                    text = "Configuration",
-                    style = Typography.h4TextStyle(),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Link(
-                    text = "Reset",
-                    onClick = MainViewModel::reset,
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            CheckboxRow(
-                text = "Show points",
-                checked = MainViewModel.showPoints,
-                onCheckedChange = { MainViewModel.showPoints = it },
-            )
-            CheckboxRow(
-                text = "Constrain edge points",
-                checked = MainViewModel.constrainEdgePoints,
-                onCheckedChange = { MainViewModel.constrainEdgePoints = it },
-            )
-        }
-
-        Divider(orientation = Orientation.Horizontal, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
-
-        Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(16.dp),
         ) {
@@ -108,13 +75,13 @@ fun SidePanel(
 
             Row(
                 Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = "Colors",
                     style = Typography.h4TextStyle(),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    fontWeight = FontWeight.SemiBold
                 )
                 IconButton(
                     onClick = { showColorInput = true }
@@ -151,6 +118,37 @@ fun SidePanel(
 
         Divider(orientation = Orientation.Horizontal, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
 
+        Column(
+            Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                Text(
+                    text = "Points",
+                    style = Typography.h4TextStyle(),
+                    fontWeight = FontWeight.SemiBold
+                )
+                Link(
+                    text = "Reset",
+                    onClick = MainViewModel::reset,
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            CheckboxRow(
+                text = "Show points",
+                checked = MainViewModel.showPoints,
+                onCheckedChange = { MainViewModel.showPoints = it },
+            )
+            CheckboxRow(
+                text = "Constrain edge points",
+                checked = MainViewModel.constrainEdgePoints,
+                onCheckedChange = { MainViewModel.constrainEdgePoints = it },
+            )
+        }
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(16.dp)
@@ -158,7 +156,6 @@ fun SidePanel(
             itemsIndexed(MainViewModel.colorPoints) { rowIdx, colorPoints ->
                 Text(
                     text =  "Row ${rowIdx + 1}",
-                    style = Typography.h4TextStyle(),
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.height(8.dp))
