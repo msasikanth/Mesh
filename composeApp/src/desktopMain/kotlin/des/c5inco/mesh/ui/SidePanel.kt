@@ -1,5 +1,6 @@
 package des.c5inco.mesh.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,8 +58,10 @@ import org.jetbrains.jewel.ui.component.IconButton
 import org.jetbrains.jewel.ui.component.Link
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
+import org.jetbrains.jewel.ui.component.Tooltip
 import org.jetbrains.jewel.ui.component.Typography
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SidePanel(
     modifier: Modifier = Modifier
@@ -83,13 +86,15 @@ fun SidePanel(
                     style = Typography.h4TextStyle(),
                     fontWeight = FontWeight.SemiBold
                 )
-                IconButton(
-                    onClick = { showColorInput = true }
-                ) {
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.add_dark),
-                        contentDescription = "Add color"
-                    )
+                Tooltip(tooltip = { Text("Add color") }) {
+                    IconButton(
+                        onClick = { showColorInput = true }
+                    ) {
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.add_dark),
+                            contentDescription = "Add color"
+                        )
+                    }
                 }
             }
 
@@ -185,6 +190,7 @@ fun SidePanel(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ColorInput(
     onSubmit: (Color) -> Unit = {},
@@ -272,13 +278,15 @@ private fun ColorInput(
                 .weight(1f)
         )
         Spacer(Modifier.width(8.dp))
-        IconButton(
-            onClick = onCancel
-        ) {
-            Icon(
-                painter = painterResource(resource = Res.drawable.closeSmall_dark),
-                contentDescription = "Cancel"
-            )
+        Tooltip(tooltip = { Text("Cancel") }) {
+            IconButton(
+                onClick = onCancel
+            ) {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.closeSmall_dark),
+                    contentDescription = "Cancel"
+                )
+            }
         }
     }
 }
