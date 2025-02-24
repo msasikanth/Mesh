@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.toColor
 import des.c5inco.mesh.common.toHexStringNoHash
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
+import des.c5inco.mesh.ui.views.ColorDropdown
 import des.c5inco.mesh.ui.views.ColorSwatch
 import des.c5inco.mesh.ui.views.OffsetInputField
 import kotlinx.coroutines.flow.collectLatest
@@ -306,18 +307,24 @@ private fun ColorPointRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        ColorSwatch(color = MainViewModel.getColor(colorInt))
+        ColorDropdown(
+            selectedColor = colorInt,
+            colors = MainViewModel.colors,
+            onSelected = { onUpdatePoint(Pair(Offset(x = x, y = y), it)) }
+        )
         OffsetInputField(
             value = x,
             enabled = !constrainX,
             paramName = "X",
-            onUpdate = { onUpdatePoint(Pair(Offset(x = it, y = y), colorInt)) }
+            onUpdate = { onUpdatePoint(Pair(Offset(x = it, y = y), colorInt)) },
+            modifier = Modifier.weight(1f)
         )
         OffsetInputField(
             value = y,
             enabled = !constrainY,
             paramName = "Y",
-            onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), colorInt)) }
+            onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), colorInt)) },
+            modifier = Modifier.weight(1f)
         )
     }
 }

@@ -1,7 +1,6 @@
 package des.c5inco.mesh.ui.views
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -42,7 +41,7 @@ fun OffsetInputField(
         state = textFieldState,
         enabled = enabled,
         leadingIcon = {
-            ParameterSwatch(text = paramName, modifier = Modifier.padding(end = 8.dp))
+            ParameterSwatch(text = paramName, modifier = Modifier.padding(end = 6.dp))
         },
         modifier = modifier
             .onFocusChanged { validate() }
@@ -65,6 +64,6 @@ fun OffsetInputField(
                 }
                 return@onKeyEvent true
             }
-            .width(90.dp)
+//            .width(84.dp)
     )
 }
