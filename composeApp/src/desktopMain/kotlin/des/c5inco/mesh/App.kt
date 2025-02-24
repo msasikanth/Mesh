@@ -4,6 +4,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.ui.GradientCanvas
@@ -16,7 +20,14 @@ fun App() {
     Row(
         Modifier.fillMaxSize()
     ) {
-        GradientCanvas(modifier = Modifier.weight(1f))
-        SidePanel(modifier = Modifier.width(250.dp))
+        var selectedColorPoint: Pair<Int, Int>? by remember { mutableStateOf(null) }
+
+        GradientCanvas(
+            onPointDrag = { selectedColorPoint = it },
+            modifier = Modifier.weight(1f))
+        SidePanel(
+            selectedColorPoint = selectedColorPoint,
+            modifier = Modifier.width(250.dp)
+        )
     }
 }

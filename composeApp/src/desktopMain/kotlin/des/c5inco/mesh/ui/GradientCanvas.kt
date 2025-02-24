@@ -20,6 +20,7 @@ import org.jetbrains.jewel.ui.theme.colorPalette
 
 @Composable
 fun GradientCanvas(
+    onPointDrag: (Pair<Int, Int>?) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
     val showPoints by remember { MainViewModel::showPoints }
@@ -74,7 +75,14 @@ fun GradientCanvas(
                                 yIndex = rowIdx,
                                 color = MainViewModel.getColor(col.second),
                                 modifier = Modifier.pointerInput(Unit) {
-                                    detectDragGestures { change, dragAmount ->
+                                    detectDragGestures(
+                                        onDragStart = {
+                                            onPointDrag(Pair(rowIdx, colIdx))
+                                        },
+                                        onDragEnd = {
+                                            onPointDrag(null)
+                                        }
+                                    ) { change, dragAmount ->
                                         change.consume()
                                         handlePointDrag(
                                             coordinate = Pair(colIdx, rowIdx),

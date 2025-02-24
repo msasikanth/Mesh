@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -61,10 +63,12 @@ import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
 import org.jetbrains.jewel.ui.component.Tooltip
 import org.jetbrains.jewel.ui.component.Typography
+import org.jetbrains.jewel.ui.theme.colorPalette
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SidePanel(
+    selectedColorPoint: Pair<Int, Int>? = null,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier
@@ -155,6 +159,9 @@ fun SidePanel(
             )
         }
 
+        val selectedPointColor = JewelTheme.colorPalette.blue(6)
+        val selectedHighlightHeight = 24.dp
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(16.dp)
@@ -169,21 +176,38 @@ fun SidePanel(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     colorPoints.forEachIndexed { colIdx, point ->
-                        ColorPointRow(
-                            x = point.first.x,
-                            y = point.first.y,
-                            constrainX = MainViewModel.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
-                            constrainY = MainViewModel.constrainEdgePoints && (rowIdx == 0 || rowIdx == MainViewModel.colorPoints.size - 1),
-                            colorInt = point.second,
-                            onUpdatePoint = { (nextOffset, nextColor) ->
-                                MainViewModel.updateColorPoint(
-                                    col = colIdx,
-                                    row = rowIdx,
-                                    point = Pair(Offset(x = nextOffset.x, y = nextOffset.y), nextColor)
+                        Box(
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            ColorPointRow(
+                                x = point.first.x,
+                                y = point.first.y,
+                                constrainX = MainViewModel.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
+                                constrainY = MainViewModel.constrainEdgePoints && (rowIdx == 0 || rowIdx == MainViewModel.colorPoints.size - 1),
+                                colorInt = point.second,
+                                onUpdatePoint = { (nextOffset, nextColor) ->
+                                    MainViewModel.updateColorPoint(
+                                        col = colIdx,
+                                        row = rowIdx,
+                                        point = Pair(
+                                            Offset(x = nextOffset.x, y = nextOffset.y),
+                                            nextColor
+                                        )
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            if (selectedColorPoint == Pair(rowIdx, colIdx)) {
+                                Spacer(
+                                    Modifier
+                                        .offset(x = -16.dp)
+                                        .background(selectedPointColor)
+                                        .width(4.dp)
+                                        .height(selectedHighlightHeight)
                                 )
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                            }
+                        }
                     }
                 }
             }
