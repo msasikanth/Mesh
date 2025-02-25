@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import kotlin.math.max
 
 private val defaultColors = listOf(
     Color(0xFF00796B),
@@ -40,7 +41,17 @@ object MainViewModel {
     var showPoints by mutableStateOf(false)
     var constrainEdgePoints by mutableStateOf(true)
     val colors = defaultColors.toMutableStateList()
-    var colorPoints = defaultColorPoints.toMutableStateList()
+    var colorPointsRows by mutableStateOf(3)
+    var colorPointsCols by mutableStateOf(4)
+    val colorPoints = defaultColorPoints.toMutableStateList()
+
+    fun updatePointsRows(rows: Int) {
+        colorPointsRows = max(rows, 2)
+    }
+
+    fun updatePointsCols(cols: Int) {
+        colorPointsCols = max(cols, 2)
+    }
 
     fun getColor(index: Int): Color {
         return colors.getOrElse(index) { _ -> defaultColors[0] }
@@ -61,7 +72,6 @@ object MainViewModel {
                     point
                 }
             }
-
             colorPoints.set(index = idx, element = newPoints.toList())
         }
         colors.removeAt(index)
@@ -86,7 +96,7 @@ object MainViewModel {
             }
             newY = when (row) {
                 0 -> 0f
-                colorPoints.size - 1 -> 1f
+                 colorPoints.size - 1 -> 1f
                 else -> newY
             }
         }

@@ -41,6 +41,7 @@ import des.c5inco.mesh.common.toHexStringNoHash
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
 import des.c5inco.mesh.ui.views.ColorDropdown
 import des.c5inco.mesh.ui.views.ColorSwatch
+import des.c5inco.mesh.ui.views.DimensionInputField
 import des.c5inco.mesh.ui.views.OffsetInputField
 import kotlinx.coroutines.flow.collectLatest
 import mesh.composeapp.generated.resources.Res
@@ -147,6 +148,24 @@ fun SidePanel(
                     Link(
                         text = "Reset",
                         onClick = MainViewModel::reset,
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+                Row {
+                    DimensionInputField(
+                        value = MainViewModel.colorPointsRows,
+                        enabled = true,
+                        paramName = "Rows",
+                        onUpdate = MainViewModel::updatePointsRows,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    DimensionInputField(
+                        value = MainViewModel.colorPointsCols,
+                        enabled = true,
+                        paramName = "Cols",
+                        onUpdate = MainViewModel::updatePointsCols,
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 Spacer(Modifier.height(12.dp))
