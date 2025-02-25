@@ -1,7 +1,6 @@
 package des.c5inco.mesh.ui.views
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,9 +16,7 @@ fun ParameterSwatch(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
-            .size(16.dp),
+        modifier = modifier.clip(RoundedCornerShape(4.dp)),
         contentAlignment = Alignment.Center
     ) {
         Text(text, color = JewelTheme.globalColors.text.info)

@@ -1,7 +1,7 @@
 package des.c5inco.mesh.ui.views
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -12,26 +12,25 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import des.c5inco.mesh.common.formatFloat
 import org.jetbrains.jewel.ui.component.TextField
 
 @Composable
-fun OffsetInputField(
-    value: Float,
+fun DimensionInputField(
+    value: Int,
     enabled: Boolean = false,
     paramName: String,
-    onUpdate: (Float) -> Unit,
+    onUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
-    val textFieldState = remember(value) { TextFieldState(formatFloat(value)) }
+    val textFieldState = remember(value) { TextFieldState(value.toString()) }
 
     fun reset() {
-        textFieldState.edit { replace(0, textFieldState.text.length, formatFloat(value)) }
+        textFieldState.edit { replace(0, textFieldState.text.length, value.toString()) }
     }
 
     fun validate() {
-        textFieldState.text.toString().toFloatOrNull()?.let { next ->
+        textFieldState.text.toString().toIntOrNull()?.let { next ->
             onUpdate(next)
         } ?: run {
             reset()
@@ -42,7 +41,12 @@ fun OffsetInputField(
         state = textFieldState,
         enabled = enabled,
         leadingIcon = {
-            ParameterSwatch(text = paramName, modifier = Modifier.size(16.dp).padding(end = 6.dp))
+            ParameterSwatch(
+                text = paramName,
+                modifier = Modifier
+                    .height(16.dp)
+                    .padding(end = 6.dp)
+            )
         },
         modifier = modifier
             .onFocusChanged { validate() }
@@ -65,6 +69,5 @@ fun OffsetInputField(
                 }
                 return@onKeyEvent true
             }
-//            .width(84.dp)
     )
 }
