@@ -6,7 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,11 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
@@ -63,149 +59,156 @@ import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
 import org.jetbrains.jewel.ui.component.Tooltip
 import org.jetbrains.jewel.ui.component.Typography
+import org.jetbrains.jewel.ui.component.VerticallyScrollableContainer
 import org.jetbrains.jewel.ui.theme.colorPalette
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun SidePanel(
     selectedColorPoint: Pair<Int, Int>? = null,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier
-        .fillMaxHeight()
-        .background(JewelTheme.globalColors.panelBackground),
+    VerticallyScrollableContainer(
+        modifier = modifier
+            .fillMaxHeight()
+            .background(JewelTheme.globalColors.panelBackground),
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(16.dp),
-        ) {
-            var showColorInput by remember { mutableStateOf(false) }
-
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+        Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp),
             ) {
-                Text(
-                    text = "Colors",
-                    style = Typography.h4TextStyle(),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Tooltip(tooltip = { Text("Add color") }) {
-                    IconButton(
-                        onClick = { showColorInput = true }
-                    ) {
-                        Icon(
-                            painter = painterResource(resource = Res.drawable.add_dark),
-                            contentDescription = "Add color"
+                var showColorInput by remember { mutableStateOf(false) }
+
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "Colors",
+                        style = Typography.h4TextStyle(),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Tooltip(tooltip = { Text("Add color") }) {
+                        IconButton(
+                            onClick = { showColorInput = true }
+                        ) {
+                            Icon(
+                                painter = painterResource(resource = Res.drawable.add_dark),
+                                contentDescription = "Add color"
+                            )
+                        }
+                    }
+                }
+
+                if (showColorInput) {
+                    ColorInput(
+                        onCancel = { showColorInput = false },
+                        onSubmit = {
+                            showColorInput = false
+                            MainViewModel.colors.add(it)
+                        }
+                    )
+                }
+                FlowRow(
+                    maxItemsInEachRow = 6,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    MainViewModel.colors.forEachIndexed { index, color ->
+                        ColorSwatch(
+                            color = color,
+                            modifier = Modifier.clickable { MainViewModel.removeColor(index) }
                         )
                     }
                 }
             }
 
-            if (showColorInput) {
-                ColorInput(
-                    onCancel = { showColorInput = false },
-                    onSubmit = {
-                        showColorInput = false
-                        MainViewModel.colors.add(it)
-                    }
-                )
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(6),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+            Divider(
+                orientation = Orientation.Horizontal,
+                thickness = 1.dp,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Column(
+                Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
             ) {
-                itemsIndexed(MainViewModel.colors) { index, color ->
-                    ColorSwatch(
-                        color = color,
-                        modifier = Modifier.clickable { MainViewModel.removeColor(index) }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Text(
+                        text = "Points",
+                        style = Typography.h4TextStyle(),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Link(
+                        text = "Reset",
+                        onClick = MainViewModel::reset,
                     )
                 }
+                Spacer(Modifier.height(12.dp))
+                CheckboxRow(
+                    text = "Show points",
+                    checked = MainViewModel.showPoints,
+                    onCheckedChange = { MainViewModel.showPoints = it },
+                )
+                CheckboxRow(
+                    text = "Constrain edge points",
+                    checked = MainViewModel.constrainEdgePoints,
+                    onCheckedChange = { MainViewModel.constrainEdgePoints = it },
+                )
             }
-        }
 
-        Divider(orientation = Orientation.Horizontal, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+            val selectedPointColor = JewelTheme.colorPalette.blue(6)
+            val selectedHighlightHeight = 24.dp
 
-        Column(
-            Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth(),
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(16.dp)
             ) {
-                Text(
-                    text = "Points",
-                    style = Typography.h4TextStyle(),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Link(
-                    text = "Reset",
-                    onClick = MainViewModel::reset,
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            CheckboxRow(
-                text = "Show points",
-                checked = MainViewModel.showPoints,
-                onCheckedChange = { MainViewModel.showPoints = it },
-            )
-            CheckboxRow(
-                text = "Constrain edge points",
-                checked = MainViewModel.constrainEdgePoints,
-                onCheckedChange = { MainViewModel.constrainEdgePoints = it },
-            )
-        }
-
-        val selectedPointColor = JewelTheme.colorPalette.blue(6)
-        val selectedHighlightHeight = 24.dp
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            itemsIndexed(MainViewModel.colorPoints) { rowIdx, colorPoints ->
-                Text(
-                    text =  "Row ${rowIdx + 1}",
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(Modifier.height(8.dp))
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    colorPoints.forEachIndexed { colIdx, point ->
-                        Box(
-                            contentAlignment = Alignment.CenterStart,
-                        ) {
-                            ColorPointRow(
-                                x = point.first.x,
-                                y = point.first.y,
-                                constrainX = MainViewModel.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
-                                constrainY = MainViewModel.constrainEdgePoints && (rowIdx == 0 || rowIdx == MainViewModel.colorPoints.size - 1),
-                                colorInt = point.second,
-                                onUpdatePoint = { (nextOffset, nextColor) ->
-                                    MainViewModel.updateColorPoint(
-                                        col = colIdx,
-                                        row = rowIdx,
-                                        point = Pair(
-                                            Offset(x = nextOffset.x, y = nextOffset.y),
-                                            nextColor
+                MainViewModel.colorPoints.forEachIndexed() { rowIdx, colorPoints ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = "Row ${rowIdx + 1}",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        colorPoints.forEachIndexed { colIdx, point ->
+                            Box(
+                                contentAlignment = Alignment.CenterStart,
+                            ) {
+                                ColorPointRow(
+                                    x = point.first.x,
+                                    y = point.first.y,
+                                    constrainX = MainViewModel.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
+                                    constrainY = MainViewModel.constrainEdgePoints && (rowIdx == 0 || rowIdx == MainViewModel.colorPoints.size - 1),
+                                    colorInt = point.second,
+                                    onUpdatePoint = { (nextOffset, nextColor) ->
+                                        MainViewModel.updateColorPoint(
+                                            col = colIdx,
+                                            row = rowIdx,
+                                            point = Pair(
+                                                Offset(x = nextOffset.x, y = nextOffset.y),
+                                                nextColor
+                                            )
                                         )
-                                    )
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-                            if (selectedColorPoint == Pair(rowIdx, colIdx)) {
-                                Spacer(
-                                    Modifier
-                                        .offset(x = -16.dp)
-                                        .background(selectedPointColor)
-                                        .width(4.dp)
-                                        .height(selectedHighlightHeight)
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
                                 )
+
+                                if (selectedColorPoint == Pair(rowIdx, colIdx)) {
+                                    Spacer(
+                                        Modifier
+                                            .offset(x = -16.dp)
+                                            .background(selectedPointColor)
+                                            .width(4.dp)
+                                            .height(selectedHighlightHeight)
+                                    )
+                                }
                             }
                         }
                     }
