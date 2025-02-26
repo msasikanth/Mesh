@@ -24,9 +24,10 @@ Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) a
 
 - [ ] Export code for gradient
 - [ ] Ability to change canvas background color
+- [ ] Allow changing resolution of gradient
 - [ ] Save/load gradient configurations
 - [ ] Multiple gradient presets
-- [ ] Gradient animation
+- [ ] Gradient animating fun
 - [ ] Undo/redo functionality
 
 ## Stack
