@@ -80,4 +80,4 @@ composeApp/
 
 ## License
 
-[License information would go here]
+[Apache 2.0](LICENSE)
