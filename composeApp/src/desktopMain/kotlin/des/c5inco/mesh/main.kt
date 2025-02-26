@@ -13,7 +13,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Mesher",
+        title = "Mesh",
     ) {
         IntUiTheme(
             theme = themeDefinition,
