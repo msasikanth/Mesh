@@ -2,7 +2,7 @@
 
 # Mesh
 
-A simple tool to create and edit mesh gradients. Mesh gradients are drawn with the wonderful [implemenation](https://gist.github.com/sinasamaki/05725557c945c5329fdba4a3494aaecb?ref=sinasamaki.com) by [@sinasamaki](https://www.sinasamaki.com/mesh-gradients-in-jetpack-compose/)
+A simple tool to create and edit mesh gradients. Mesh gradients are drawn with the wonderful [implementation](https://gist.github.com/sinasamaki/05725557c945c5329fdba4a3494aaecb?ref=sinasamaki.com) by [@sinasamaki](https://www.sinasamaki.com/mesh-gradients-in-jetpack-compose/)
 
 Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) app, with the JetBrains [Jewel UI standalone toolkit](https://github.com/JetBrains/jewel).
 
