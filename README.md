@@ -1,4 +1,4 @@
-[Add screenshot here]
+![Screenshot of desktop app](artwork/screenshot.png)
 
 # Mesh
 
@@ -22,11 +22,12 @@ Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) a
 
 ### Future
 
-- [ ] Export code for gradient 
-- [ ] Undo/redo functionality
+- [ ] Export code for gradient
+- [ ] Ability to change canvas background color
 - [ ] Save/load gradient configurations
 - [ ] Multiple gradient presets
 - [ ] Gradient animation
+- [ ] Undo/redo functionality
 
 ## Stack
 
