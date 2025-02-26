@@ -46,15 +46,15 @@ object MainViewModel {
 
     fun updatePointsRows(rows: Int) {
         colorPointsRows = rows
-        rebuildColorPoints()
+        distributeColorPoints()
     }
 
     fun updatePointsCols(cols: Int) {
         colorPointsCols = cols
-        rebuildColorPoints()
+        distributeColorPoints()
     }
 
-    fun rebuildColorPoints() {
+    fun distributeColorPoints() {
         colorPoints.clear()
 
         repeat(colorPointsRows) { rowIdx ->

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +48,7 @@ import kotlinx.coroutines.flow.collectLatest
 import mesh.composeapp.generated.resources.Res
 import mesh.composeapp.generated.resources.add_dark
 import mesh.composeapp.generated.resources.closeSmall_dark
+import mesh.composeapp.generated.resources.distributeEvenly_dark
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
@@ -55,7 +57,6 @@ import org.jetbrains.jewel.ui.component.CheckboxRow
 import org.jetbrains.jewel.ui.component.Divider
 import org.jetbrains.jewel.ui.component.Icon
 import org.jetbrains.jewel.ui.component.IconButton
-import org.jetbrains.jewel.ui.component.Link
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
 import org.jetbrains.jewel.ui.component.Tooltip
@@ -81,27 +82,21 @@ fun SidePanel(
             ) {
                 var showColorInput by remember { mutableStateOf(false) }
 
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = "Colors",
-                        style = Typography.h4TextStyle(),
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Tooltip(tooltip = { Text("Add color") }) {
-                        IconButton(
-                            onClick = { showColorInput = true }
-                        ) {
-                            Icon(
-                                painter = painterResource(resource = Res.drawable.add_dark),
-                                contentDescription = "Add color"
-                            )
+                SectionHeader(
+                    title = "Colors",
+                    actions = {
+                        Tooltip(tooltip = { Text("Add color") }) {
+                            IconButton(
+                                onClick = { showColorInput = true }
+                            ) {
+                                Icon(
+                                    painter = painterResource(resource = Res.drawable.add_dark),
+                                    contentDescription = "Add color"
+                                )
+                            }
                         }
                     }
-                }
+                )
 
                 if (showColorInput) {
                     ColorInput(
@@ -135,21 +130,19 @@ fun SidePanel(
             Column(
                 Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "Points",
-                        style = Typography.h4TextStyle(),
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Link(
-                        text = "Reset to defaults",
-                        onClick = MainViewModel::resetDefaults,
-                    )
-                }
+                SectionHeader(
+                    title = "Points",
+                    actions = {
+                        Tooltip(tooltip = { Text("Distribute points evenly") }) {
+                            IconButton(onClick = MainViewModel::distributeColorPoints) {
+                                Icon(
+                                    painter = painterResource(resource = Res.drawable.distributeEvenly_dark),
+                                    contentDescription = "Distribute points evenly"
+                                )
+                            }
+                        }
+                    }
+                )
                 Spacer(Modifier.height(12.dp))
                 Row {
                     DimensionInputField(
@@ -233,6 +226,28 @@ fun SidePanel(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    actions: @Composable RowScope.() -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = title,
+            style = Typography.h4TextStyle(),
+            fontWeight = FontWeight.SemiBold
+        )
+        Row {
+            actions()
         }
     }
 }
