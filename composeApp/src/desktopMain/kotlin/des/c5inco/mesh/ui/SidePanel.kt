@@ -146,8 +146,8 @@ fun SidePanel(
                         fontWeight = FontWeight.SemiBold
                     )
                     Link(
-                        text = "Reset",
-                        onClick = MainViewModel::reset,
+                        text = "Reset to defaults",
+                        onClick = MainViewModel::resetDefaults,
                     )
                 }
                 Spacer(Modifier.height(12.dp))
@@ -156,7 +156,7 @@ fun SidePanel(
                         value = MainViewModel.colorPointsRows,
                         enabled = true,
                         paramName = "Rows",
-                        onUpdate = MainViewModel::updatePointsRows,
+                        onUpdate = { MainViewModel.updatePointsRows(it.coerceIn(2, 10)) },
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -164,7 +164,7 @@ fun SidePanel(
                         value = MainViewModel.colorPointsCols,
                         enabled = true,
                         paramName = "Cols",
-                        onUpdate = MainViewModel::updatePointsCols,
+                        onUpdate = { MainViewModel.updatePointsCols(it.coerceIn(2, 10)) },
                         modifier = Modifier.weight(1f)
                     )
                 }

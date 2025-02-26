@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import kotlin.math.max
 
 private val defaultColors = listOf(
     Color(0xFF00796B),
@@ -46,11 +45,38 @@ object MainViewModel {
     val colorPoints = defaultColorPoints.toMutableStateList()
 
     fun updatePointsRows(rows: Int) {
-        colorPointsRows = max(rows, 2)
+        colorPointsRows = rows
+        rebuildColorPoints()
     }
 
     fun updatePointsCols(cols: Int) {
-        colorPointsCols = max(cols, 2)
+        colorPointsCols = cols
+        rebuildColorPoints()
+    }
+
+    fun rebuildColorPoints() {
+        colorPoints.clear()
+
+        repeat(colorPointsRows) { rowIdx ->
+            val newColorIndex = rowIdx % colors.size
+
+            val newPoints = mutableListOf<Pair<Offset, Int>>()
+
+            // Calculate the Y position for this row
+            val yPosition = rowIdx.toFloat() / (colorPointsRows - 1)
+
+            // Iterate through columns to create points
+            repeat(colorPointsCols) { colIdx ->
+                // Calculate the X position for this column
+                val xPosition = colIdx.toFloat() / (colorPointsCols - 1)
+
+                newPoints.add(
+                    Pair(Offset(xPosition, yPosition), newColorIndex)
+                )
+            }
+
+            colorPoints.add(newPoints.toList())
+        }
     }
 
     fun getColor(index: Int): Color {
@@ -75,11 +101,6 @@ object MainViewModel {
             colorPoints.set(index = idx, element = newPoints.toList())
         }
         colors.removeAt(index)
-    }
-
-    private fun resetColors() {
-        colors.clear()
-        colors.addAll(defaultColors)
     }
 
     fun updateColorPoint(col: Int, row: Int, point: Pair<Offset, Int>) {
@@ -107,13 +128,10 @@ object MainViewModel {
         colorPoints.set(index = row, element = colorPointsInRow.toList())
     }
 
-    private fun resetColorPoints() {
+    fun resetDefaults() {
+        colors.clear()
+        colors.addAll(defaultColors)
         colorPoints.clear()
         colorPoints.addAll(defaultColorPoints)
-    }
-
-    fun reset() {
-        resetColors()
-        resetColorPoints()
     }
 }
