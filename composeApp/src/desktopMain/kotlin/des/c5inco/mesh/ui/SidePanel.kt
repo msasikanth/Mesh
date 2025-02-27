@@ -111,9 +111,9 @@ fun SidePanel(
                     )
                 }
                 FlowRow(
-                    maxItemsInEachRow = 6,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    maxItemsInEachRow = 10,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     MainViewModel.colors.forEachIndexed { index, color ->
                         ColorSwatch(

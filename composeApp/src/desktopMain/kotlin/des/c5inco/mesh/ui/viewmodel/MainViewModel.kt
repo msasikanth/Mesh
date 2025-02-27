@@ -13,17 +13,20 @@ import com.squareup.kotlinpoet.asClassName
 import des.c5inco.mesh.common.toHexStringNoHash
 
 private val defaultColors = listOf(
-    Color(0xFF00796B),
-    Color(0xFF3F51B5),
+    Color(0xff7766EE),
+    Color(0xff8899ff),
+    Color(0xff429BED),
+    Color(0xff4FC1A6),
+    Color(0xffF0C03E),
+    Color(0xffff5599),
     Color(0xFFFF00FF),
-    Color.DarkGray
 )
 
 private val defaultColorPoints = listOf(
     listOf(
         Offset(0f, 0f) to 0,
         Offset(.33f, 0f) to 0,
-        Offset(.67f, 0f) to 2,
+        Offset(.67f, 0f) to 0,
         Offset(1f, 0f) to 0,
     ),
     listOf(
@@ -34,9 +37,9 @@ private val defaultColorPoints = listOf(
     ),
     listOf(
         Offset(0f, 1f) to 2,
-        Offset(.33f, 1f) to 3,
-        Offset(.67f, 1f) to 3,
-        Offset(1f, 1f) to 3,
+        Offset(.33f, 1f) to 2,
+        Offset(.67f, 1f) to 2,
+        Offset(1f, 1f) to 2,
     )
 )
 
