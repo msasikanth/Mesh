@@ -22,7 +22,7 @@ Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) a
 
 ### Future
 
-- [ ] Export code for gradient
+- [x] Export code for gradient
 - [ ] Ability to change canvas background color
 - [ ] Allow changing resolution of gradient
 - [ ] Save/load gradient configurations

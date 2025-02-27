@@ -49,6 +49,7 @@ import mesh.composeapp.generated.resources.Res
 import mesh.composeapp.generated.resources.add_dark
 import mesh.composeapp.generated.resources.closeSmall_dark
 import mesh.composeapp.generated.resources.distributeEvenly_dark
+import mesh.composeapp.generated.resources.featureCodeBlock_dark
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
@@ -63,6 +64,8 @@ import org.jetbrains.jewel.ui.component.Tooltip
 import org.jetbrains.jewel.ui.component.Typography
 import org.jetbrains.jewel.ui.component.VerticallyScrollableContainer
 import org.jetbrains.jewel.ui.theme.colorPalette
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
@@ -141,6 +144,20 @@ fun SidePanel(
                 SectionHeader(
                     title = "Points",
                     actions = {
+                        Tooltip(tooltip = { Text("Export points as code") }) {
+                            IconButton(onClick = {
+                                val export = MainViewModel.exportPointsAsCode()
+                                val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+                                clipboard.setContents(StringSelection(export), null)
+                                println(export)
+                            }) {
+                                Icon(
+                                    painter = painterResource(resource = Res.drawable.featureCodeBlock_dark),
+                                    contentDescription = "Export points as code"
+                                )
+                            }
+                        }
+                        Spacer(Modifier.width(2.dp))
                         Tooltip(tooltip = { Text("Distribute points evenly") }) {
                             IconButton(onClick = MainViewModel::distributeColorPoints) {
                                 Icon(

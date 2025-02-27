@@ -6,6 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.asClassName
+import des.c5inco.mesh.common.toHexStringNoHash
 
 private val defaultColors = listOf(
     Color(0xFF00796B),
@@ -125,7 +130,7 @@ object MainViewModel {
             }
             newY = when (row) {
                 0 -> 0f
-                 colorPoints.size - 1 -> 1f
+                colorPoints.size - 1 -> 1f
                 else -> newY
             }
         }
@@ -134,6 +139,47 @@ object MainViewModel {
         colorPointsInRow.set(index = col, element = newPoint)
 
         colorPoints.set(index = row, element = colorPointsInRow.toList())
+    }
+
+    fun exportPointsAsCode(): String {
+        if (colorPoints.isEmpty()) return ""
+
+        val offsetType = Offset::class.asClassName()
+        val colorType = Color::class.asClassName()
+        val pairType = Pair::class.asClassName().parameterizedBy(offsetType, colorType)
+        val innerListType = List::class.asClassName().parameterizedBy(pairType)
+        val outerListType = List::class.asClassName().parameterizedBy(innerListType)
+
+        val listInitializer = CodeBlock.builder()
+            .add("listOf(\n")
+            .indent()
+
+        colorPoints.forEachIndexed { _, innerList ->
+            listInitializer.add("listOf(\n")
+            listInitializer.indent()
+
+            innerList.forEachIndexed { _, pair ->
+                val hexString = colors[pair.second].toHexStringNoHash(includeAlpha = true)
+                listInitializer.add(
+                    "Offset(%Lf, %Lf) to Color(0x%L),\n",
+                    pair.first.x,
+                    pair.first.y,
+                    hexString
+                )
+            }
+
+            listInitializer.unindent()
+            listInitializer.add("),\n")
+        }
+
+        listInitializer.unindent()
+        listInitializer.add(")")
+
+        val codeSpec = PropertySpec.builder("colorPoints", outerListType)
+            .initializer(listInitializer.build())
+            .build()
+
+        return codeSpec.toString()
     }
 
     fun resetDefaults() {
