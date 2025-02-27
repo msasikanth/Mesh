@@ -40,9 +40,17 @@ object MainViewModel {
     var showPoints by mutableStateOf(false)
     var constrainEdgePoints by mutableStateOf(true)
     val colors = defaultColors.toMutableStateList()
+    var canvasBackgroundColor: Int by mutableStateOf(-1)
+    var canvasWidth: Int by mutableStateOf(-1)
+    var canvasHeight: Int by mutableStateOf(-1)
     var colorPointsRows by mutableStateOf(3)
     var colorPointsCols by mutableStateOf(4)
     val colorPoints = defaultColorPoints.toMutableStateList()
+
+    fun updateCanvasSize(width: Int, height: Int) {
+        canvasWidth = width
+        canvasHeight = height
+    }
 
     fun updatePointsRows(rows: Int) {
         colorPointsRows = rows
@@ -80,7 +88,7 @@ object MainViewModel {
     }
 
     fun getColor(index: Int): Color {
-        return colors.getOrElse(index) { _ -> defaultColors[0] }
+        return colors.getOrElse(index) { _ -> Color.Transparent }
     }
 
     fun removeColor(index: Int) {

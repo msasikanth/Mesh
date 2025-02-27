@@ -36,7 +36,11 @@ fun GradientCanvas(
                     }
                 )
             }
-            .background(JewelTheme.colorPalette.gray(1))
+            .background(if (MainViewModel.canvasBackgroundColor > -1) {
+                MainViewModel.getColor(MainViewModel.canvasBackgroundColor)
+            } else {
+                JewelTheme.colorPalette.gray(1)
+            })
             .padding(32.dp)
     ) {
         fun handlePointDrag(coordinate: Pair<Int, Int>, offsetX: Float, offsetY: Float) {

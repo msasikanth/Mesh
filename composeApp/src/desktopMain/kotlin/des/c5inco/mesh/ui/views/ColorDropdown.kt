@@ -53,6 +53,7 @@ import org.jetbrains.jewel.ui.util.thenIf
 fun ColorDropdown(
     selectedColor: Int,
     colors: List<Color>,
+    allowTransparency: Boolean = false,
     onSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -62,6 +63,23 @@ fun ColorDropdown(
         modifier = modifier,
         menuModifier = Modifier.offset(x = (-2).dp),
         menuContent = {
+            if (allowTransparency) {
+                selectableItem(
+                    selected = selectedColor == -1,
+                    onClick = {
+                        focusManager.clearFocus()
+                        onSelected(-1)
+                    }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ColorSwatch(color = Color.Transparent)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Transparent")
+                    }
+                }
+            }
             colors.forEachIndexed { index, color ->
                 selectableItem(
                     selected = selectedColor == index,

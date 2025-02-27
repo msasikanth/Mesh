@@ -127,6 +127,14 @@ fun SidePanel(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            //CanvasSection()
+            //
+            //Divider(
+            //    orientation = Orientation.Horizontal,
+            //    thickness = 1.dp,
+            //    modifier = Modifier.fillMaxWidth()
+            //)
+
             Column(
                 Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
             ) {
@@ -387,5 +395,43 @@ private fun ColorPointRow(
             onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), colorInt)) },
             modifier = Modifier.weight(1f)
         )
+    }
+}
+
+@Composable
+private fun CanvasSection(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(16.dp),
+    ) {
+        SectionHeader(title = "Canvas")
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ColorDropdown(
+                selectedColor = MainViewModel.canvasBackgroundColor,
+                colors = MainViewModel.colors,
+                allowTransparency = true,
+                onSelected = { MainViewModel.canvasBackgroundColor = it }
+            )
+            DimensionInputField(
+                value = MainViewModel.canvasWidth,
+                enabled = true,
+                paramName = "W",
+                onUpdate = { MainViewModel.canvasWidth = it },
+                modifier = Modifier.weight(1f)
+            )
+            DimensionInputField(
+                value = MainViewModel.canvasHeight,
+                enabled = true,
+                paramName = "H",
+                onUpdate = { MainViewModel.canvasHeight = it },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
