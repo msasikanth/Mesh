@@ -28,6 +28,7 @@ Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) a
 - [ ] Save/load gradient configurations
 - [ ] Multiple gradient presets
 - [ ] Gradient animating fun
+- [ ] Export gradient as image
 - [ ] Undo/redo functionality
 
 ## Stack
