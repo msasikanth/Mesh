@@ -35,6 +35,7 @@ kotlin {
                 exclude(group = "org.jetbrains.compose.material")
             }
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.kotlinpoet)
         }
     }
 }
