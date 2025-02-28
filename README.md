@@ -23,12 +23,12 @@ Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) a
 ### Future
 
 - [x] Export code for gradient
+- [x] Export gradient as image
 - [ ] Ability to change canvas background color
 - [ ] Allow changing resolution of gradient
 - [ ] Save/load gradient configurations
 - [ ] Multiple gradient presets
 - [ ] Gradient animating fun
-- [ ] Export gradient as image
 - [ ] Undo/redo functionality
 
 ## Stack
@@ -36,6 +36,7 @@ Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) a
 - **Kotlin** - Primary programming language
 - **Compose Multiplatform** - UI framework for desktop
 - **Jewel UI (standalone)** - JetBrains design system components
+- **Kotlinpoet** - Code generation for gradient export
 
 ## Getting Started
 
@@ -59,6 +60,7 @@ Or use the provided run configuration in `.run/desktopApp.run.xml`
 - **Add colors** using the color picker in the side panel
 - **Adjust grid** using the Rows/Cols inputs
 - **Toggle constraints** to lock edge points
+- **Export points** points as a list of `Pair<Offset, Color>` objects to use in [@sinasamaki](https://gist.github.com/sinasamaki/05725557c945c5329fdba4a3494aaecb?ref=sinasamaki.com)'s Modifier recipe
 
 ### Color Management
 
