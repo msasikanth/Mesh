@@ -24,7 +24,8 @@ fun App() {
 
         GradientCanvas(
             onPointDrag = { selectedColorPoint = it },
-            modifier = Modifier.weight(1f))
+            modifier = Modifier.weight(1f)
+        )
         SidePanel(
             selectedColorPoint = selectedColorPoint,
             modifier = Modifier.width(250.dp)
