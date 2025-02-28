@@ -21,7 +21,7 @@ fun PointCursor(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(24.dp)
+            .size(20.dp)
             .drawWithContent {
                 drawContent()
                 drawCircle(
