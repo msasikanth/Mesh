@@ -11,6 +11,9 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.asClassName
 import des.c5inco.mesh.common.toHexStringNoHash
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 
 private val defaultColors = listOf(
     Color(0xff7766EE),
@@ -190,5 +193,18 @@ object MainViewModel {
         colors.addAll(defaultColors)
         colorPoints.clear()
         colorPoints.addAll(defaultColorPoints)
+    }
+
+    fun saveImage(image: BufferedImage) {
+        try {
+            val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
+            val file = File(desktopPath, "mesh-export.png") // You can change the filename and extension
+
+            ImageIO.write(image, "png", file)
+            println("Image saved to: ${file.absolutePath}")
+        } catch (e: Exception) {
+            println("Error saving image: ${e.message}")
+            e.printStackTrace()
+        }
     }
 }
