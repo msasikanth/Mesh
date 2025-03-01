@@ -50,8 +50,6 @@ import des.c5inco.mesh.ui.views.OffsetInputField
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import mesh.composeapp.generated.resources.Res
-import mesh.composeapp.generated.resources.add_dark
-import mesh.composeapp.generated.resources.closeSmall_dark
 import mesh.composeapp.generated.resources.distributeEvenly_dark
 import mesh.composeapp.generated.resources.featureCodeBlock_dark
 import org.jetbrains.compose.resources.painterResource
@@ -69,6 +67,7 @@ import org.jetbrains.jewel.ui.component.TextField
 import org.jetbrains.jewel.ui.component.Tooltip
 import org.jetbrains.jewel.ui.component.Typography
 import org.jetbrains.jewel.ui.component.VerticallyScrollableContainer
+import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import org.jetbrains.jewel.ui.theme.colorPalette
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
@@ -102,7 +101,8 @@ fun SidePanel(
                                 onClick = { showColorInput = true }
                             ) {
                                 Icon(
-                                    painter = painterResource(resource = Res.drawable.add_dark),
+                                    key = AllIconsKeys.General.Add,
+                                    iconClass = AllIconsKeys::class.java,
                                     contentDescription = "Add color"
                                 )
                             }
@@ -383,7 +383,8 @@ private fun ColorInput(
                 onClick = onCancel
             ) {
                 Icon(
-                    painter = painterResource(resource = Res.drawable.closeSmall_dark),
+                    key = AllIconsKeys.General.CloseSmall,
+                    iconClass = AllIconsKeys::class.java,
                     contentDescription = "Cancel"
                 )
             }
