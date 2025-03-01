@@ -65,15 +65,38 @@ object MainViewModel {
 
     fun updatePointsRows(rows: Int) {
         colorPointsRows = rows
-        distributeColorPoints()
+        generateColorPoints()
     }
 
     fun updatePointsCols(cols: Int) {
         colorPointsCols = cols
-        distributeColorPoints()
+        generateColorPoints()
     }
 
-    fun distributeColorPoints() {
+    fun distributeOffsetsEvenly() {
+        val newPoints = colorPoints.mapIndexed { rowIdx, currentPoints ->
+            val newPoints = mutableListOf<Pair<Offset, Int>>()
+
+            // Calculate the Y position for this row
+            val yPosition = rowIdx.toFloat() / (colorPointsRows - 1)
+
+            // Iterate through columns to create points
+            repeat(colorPointsCols) { colIdx ->
+                // Calculate the X position for this column
+                val xPosition = colIdx.toFloat() / (colorPointsCols - 1)
+
+                newPoints.add(
+                    Pair(Offset(xPosition, yPosition), currentPoints[colIdx].second)
+                )
+            }
+
+            newPoints.toList()
+        }
+        colorPoints.clear()
+        colorPoints.addAll(newPoints)
+    }
+
+    private fun generateColorPoints() {
         colorPoints.clear()
 
         repeat(colorPointsRows) { rowIdx ->

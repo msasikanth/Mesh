@@ -172,7 +172,7 @@ fun SidePanel(
                         }
                         Spacer(Modifier.width(2.dp))
                         Tooltip(tooltip = { Text("Distribute points evenly") }) {
-                            IconButton(onClick = MainViewModel::distributeColorPoints) {
+                            IconButton(onClick = MainViewModel::distributeOffsetsEvenly) {
                                 Icon(
                                     painter = painterResource(resource = Res.drawable.distributeEvenly_dark),
                                     contentDescription = "Distribute points evenly"
