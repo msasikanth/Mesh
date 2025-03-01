@@ -61,6 +61,7 @@ Or use the provided run configuration in `.run/desktopApp.run.xml`
 - **Adjust grid** using the Rows/Cols inputs
 - **Toggle constraints** to lock edge points
 - **Export points** points as a list of `Pair<Offset, Color>` objects to use in [@sinasamaki](https://gist.github.com/sinasamaki/05725557c945c5329fdba4a3494aaecb?ref=sinasamaki.com)'s Modifier recipe
+- **Export as an image** at 1x, 2x, or 3x scale
 
 ### Color Management
 
