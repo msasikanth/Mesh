@@ -195,10 +195,10 @@ object MainViewModel {
         colorPoints.addAll(defaultColorPoints)
     }
 
-    fun saveImage(image: BufferedImage) {
+    fun saveImage(image: BufferedImage, scale: Int) {
         try {
             val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
-            val file = File(desktopPath, "mesh-export.png") // You can change the filename and extension
+            val file = File(desktopPath, "mesh-export-${scale}x.png") // You can change the filename and extension
 
             ImageIO.write(image, "png", file)
             println("Image saved to: ${file.absolutePath}")
