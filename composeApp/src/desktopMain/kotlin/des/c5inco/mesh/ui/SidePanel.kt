@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -32,8 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -48,7 +45,6 @@ import des.c5inco.mesh.ui.views.ColorSwatch
 import des.c5inco.mesh.ui.views.DimensionInputField
 import des.c5inco.mesh.ui.views.OffsetInputField
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import mesh.composeapp.generated.resources.Res
 import mesh.composeapp.generated.resources.distributeEvenly_dark
 import mesh.composeapp.generated.resources.featureCodeBlock_dark
@@ -75,9 +71,9 @@ import java.awt.datatransfer.StringSelection
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun SidePanel(
-    exportGraphicsLayer: GraphicsLayer,
     exportScale: Int,
     onExportScaleChange: (Int) -> Unit,
+    onExport: () -> Unit = {},
     selectedColorPoint: Pair<Int, Int>? = null,
     modifier: Modifier = Modifier
 ) {
@@ -140,9 +136,9 @@ fun SidePanel(
             )
 
             CanvasSection(
-                exportGraphicsLayer = exportGraphicsLayer,
                 exportScale = exportScale,
-                onExportScaleChange = onExportScaleChange
+                onExportScaleChange = onExportScaleChange,
+                onExport = onExport
             )
 
             Divider(
@@ -431,12 +427,11 @@ private fun ColorPointRow(
 
 @Composable
 private fun CanvasSection(
-    exportGraphicsLayer: GraphicsLayer,
     exportScale: Int,
     onExportScaleChange: (Int) -> Unit,
+    onExport: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = modifier.padding(16.dp),
@@ -456,14 +451,7 @@ private fun CanvasSection(
             Spacer(Modifier.width(8.dp))
             Link(
                 text = "Export",
-                onClick = {
-                    coroutineScope.launch {
-                        val bitmap = exportGraphicsLayer.toImageBitmap()
-                        val awtImage = bitmap.toAwtImage()
-
-                        MainViewModel.saveImage(image = awtImage, scale = exportScale)
-                    }
-                }
+                onClick = onExport
             )
             Spacer(Modifier.width(4.dp))
             DropdownLink(

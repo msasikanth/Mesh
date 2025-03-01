@@ -98,11 +98,12 @@ fun GradientCanvas(
                     .onGloballyPositioned { handlePositioned(it) }
                     .clip(RoundedCornerShape(16.dp))
                     .drawWithContent {
-                        // call record to capture the content in the graphics layer
+                        // Record content on visible graphics layer
                         graphicsLayer.record {
-                            // draw the contents of the composable into the graphics layer
                             this@drawWithContent.drawContent()
                         }
+
+                        // Scale and translate the export graphics layer accordingly
                         exportGraphicsLayer.apply {
                             scaleX = exportScale.toFloat()
                             scaleY = exportScale.toFloat()
@@ -122,12 +123,15 @@ fun GradientCanvas(
                                 }
                             }
                         }
+
+                        // Record content on the export graphics layer
                         exportGraphicsLayer.record(
                             size = IntSize(exportSize.width * exportScale, exportSize.height * exportScale),
                         ) {
                             this@drawWithContent.drawContent()
                         }
-                        // draw the graphics layer on the visible canvas
+
+                        // Draw the visible graphics layer on the canvas
                         drawLayer(graphicsLayer)
                     }
                     .meshGradient(
