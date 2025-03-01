@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -31,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -45,6 +48,7 @@ import des.c5inco.mesh.ui.views.ColorSwatch
 import des.c5inco.mesh.ui.views.DimensionInputField
 import des.c5inco.mesh.ui.views.OffsetInputField
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import mesh.composeapp.generated.resources.Res
 import mesh.composeapp.generated.resources.add_dark
 import mesh.composeapp.generated.resources.closeSmall_dark
@@ -56,8 +60,10 @@ import org.jetbrains.jewel.ui.Orientation
 import org.jetbrains.jewel.ui.Outline
 import org.jetbrains.jewel.ui.component.CheckboxRow
 import org.jetbrains.jewel.ui.component.Divider
+import org.jetbrains.jewel.ui.component.DropdownLink
 import org.jetbrains.jewel.ui.component.Icon
 import org.jetbrains.jewel.ui.component.IconButton
+import org.jetbrains.jewel.ui.component.Link
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
 import org.jetbrains.jewel.ui.component.Tooltip
@@ -70,6 +76,9 @@ import java.awt.datatransfer.StringSelection
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun SidePanel(
+    exportGraphicsLayer: GraphicsLayer,
+    exportScale: Int,
+    onExportScaleChange: (Int) -> Unit,
     selectedColorPoint: Pair<Int, Int>? = null,
     modifier: Modifier = Modifier
 ) {
@@ -130,13 +139,17 @@ fun SidePanel(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            //CanvasSection()
-            //
-            //Divider(
-            //    orientation = Orientation.Horizontal,
-            //    thickness = 1.dp,
-            //    modifier = Modifier.fillMaxWidth()
-            //)
+            CanvasSection(
+                exportGraphicsLayer = exportGraphicsLayer,
+                exportScale = exportScale,
+                onExportScaleChange = onExportScaleChange
+            )
+
+            Divider(
+                orientation = Orientation.Horizontal,
+                thickness = 1.dp,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Column(
                 Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
@@ -417,38 +430,82 @@ private fun ColorPointRow(
 
 @Composable
 private fun CanvasSection(
+    exportGraphicsLayer: GraphicsLayer,
+    exportScale: Int,
+    onExportScaleChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.padding(16.dp),
     ) {
         SectionHeader(title = "Canvas")
+        Spacer(Modifier.height(16.dp))
+
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            ColorDropdown(
-                selectedColor = MainViewModel.canvasBackgroundColor,
-                colors = MainViewModel.colors,
-                allowTransparency = true,
-                onSelected = { MainViewModel.canvasBackgroundColor = it }
+            Text(
+                text = "${MainViewModel.canvasWidth} x ${MainViewModel.canvasHeight}",
+                style = Typography.editorTextStyle(),
+                color = JewelTheme.globalColors.text.info
             )
-            DimensionInputField(
-                value = MainViewModel.canvasWidth,
-                enabled = true,
-                paramName = "W",
-                onUpdate = { MainViewModel.canvasWidth = it },
-                modifier = Modifier.weight(1f)
+            Spacer(Modifier.width(8.dp))
+            Link(
+                text = "Export",
+                onClick = {
+                    coroutineScope.launch {
+                        val bitmap = exportGraphicsLayer.toImageBitmap()
+                        val awtImage = bitmap.toAwtImage()
+
+                        MainViewModel.saveImage(image = awtImage, scale = exportScale)
+                    }
+                }
             )
-            DimensionInputField(
-                value = MainViewModel.canvasHeight,
-                enabled = true,
-                paramName = "H",
-                onUpdate = { MainViewModel.canvasHeight = it },
-                modifier = Modifier.weight(1f)
-            )
+            Spacer(Modifier.width(4.dp))
+            DropdownLink(
+                text = "@${exportScale}x",
+            ) {
+                repeat(3) {
+                    selectableItem(
+                        selected = exportScale == it + 1,
+                        onClick = {
+                            onExportScaleChange(it + 1)
+                        },
+                    ) {
+                        Text("${it + 1}x")
+                    }
+                }
+            }
         }
+
+        //Row(
+        //    horizontalArrangement = Arrangement.spacedBy(8.dp),
+        //    verticalAlignment = Alignment.CenterVertically,
+        //    modifier = Modifier.fillMaxWidth()
+        //) {
+        //    ColorDropdown(
+        //        selectedColor = MainViewModel.canvasBackgroundColor,
+        //        colors = MainViewModel.colors,
+        //        allowTransparency = true,
+        //        onSelected = { MainViewModel.canvasBackgroundColor = it }
+        //    )
+        //    DimensionInputField(
+        //        value = MainViewModel.canvasWidth,
+        //        enabled = true,
+        //        paramName = "W",
+        //        onUpdate = { MainViewModel.canvasWidth = it },
+        //        modifier = Modifier.weight(1f)
+        //    )
+        //    DimensionInputField(
+        //        value = MainViewModel.canvasHeight,
+        //        enabled = true,
+        //        paramName = "H",
+        //        onUpdate = { MainViewModel.canvasHeight = it },
+        //        modifier = Modifier.weight(1f)
+        //    )
+        //}
     }
 }

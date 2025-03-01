@@ -3,60 +3,55 @@ package des.c5inco.mesh.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.PointCursor
 import des.c5inco.mesh.common.meshGradient
 import des.c5inco.mesh.ui.viewmodel.MainViewModel
-import kotlinx.coroutines.launch
 import org.jetbrains.jewel.foundation.theme.JewelTheme
-import org.jetbrains.jewel.ui.component.Link
-import org.jetbrains.jewel.ui.component.Text
-import org.jetbrains.jewel.ui.component.Typography
 import org.jetbrains.jewel.ui.theme.colorPalette
 
 @Composable
 fun GradientCanvas(
+    exportGraphicsLayer: GraphicsLayer,
+    exportScale: Int,
     onPointDrag: (Pair<Int, Int>?) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
     val showPoints by remember { MainViewModel::showPoints }
     val resolution by remember { MainViewModel::resolution }
     val colors = remember { MainViewModel.colorPoints }
-    var height by remember { mutableStateOf(0) }
-    var width by remember { mutableStateOf(0) }
+    var exportSize by remember { mutableStateOf(IntSize(0, 0)) }
 
     fun handlePositioned(coordinates: LayoutCoordinates) {
-        height = coordinates.size.height
-        width = coordinates.size.width
+        MainViewModel.apply {
+            canvasWidth = coordinates.size.width
+            canvasHeight = coordinates.size.height
+        }
+        exportSize = IntSize(MainViewModel.canvasWidth, MainViewModel.canvasHeight)
     }
 
     Column(
@@ -67,34 +62,6 @@ fun GradientCanvas(
                 JewelTheme.colorPalette.gray(1)
             })
     ) {
-        val coroutineScope = rememberCoroutineScope()
-        val graphicsLayer = rememberGraphicsLayer()
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp)
-        ) {
-            Text(
-                text = "$width x $height @ $resolution.dp",
-                style = Typography.editorTextStyle(),
-                color = JewelTheme.globalColors.text.info
-            )
-            Spacer(Modifier.width(8.dp))
-            Link(
-                text = "Export",
-                onClick = {
-                    coroutineScope.launch {
-                        val bitmap = graphicsLayer.toImageBitmap()
-                        val awtImage = bitmap.toAwtImage()
-
-                        MainViewModel.saveImage(awtImage)
-                    }
-                }
-            )
-        }
         BoxWithConstraints(
             modifier
                 .pointerInput(Unit) {
@@ -104,7 +71,7 @@ fun GradientCanvas(
                         }
                     )
                 }
-                .padding(start = 32.dp, end = 32.dp, bottom = 32.dp)
+                .padding(32.dp)
         ) {
             val maxWidth = constraints.maxWidth
             val maxHeight = constraints.maxHeight
@@ -124,6 +91,8 @@ fun GradientCanvas(
                 )
             }
 
+            val graphicsLayer = rememberGraphicsLayer()
+
             Box(
                 Modifier
                     .onGloballyPositioned { handlePositioned(it) }
@@ -132,6 +101,30 @@ fun GradientCanvas(
                         // call record to capture the content in the graphics layer
                         graphicsLayer.record {
                             // draw the contents of the composable into the graphics layer
+                            this@drawWithContent.drawContent()
+                        }
+                        exportGraphicsLayer.apply {
+                            scaleX = exportScale.toFloat()
+                            scaleY = exportScale.toFloat()
+
+                            when (exportScale) {
+                                3 -> {
+                                    translationX = exportSize.width.toFloat() * 3
+                                    translationY = exportSize.height.toFloat() * 3
+                                }
+                                2 -> {
+                                    translationX = exportSize.width.toFloat()
+                                    translationY = exportSize.height.toFloat()
+                                }
+                                else -> {
+                                    translationX = 0f
+                                    translationY = 0f
+                                }
+                            }
+                        }
+                        exportGraphicsLayer.record(
+                            size = IntSize(exportSize.width * exportScale, exportSize.height * exportScale),
+                        ) {
                             this@drawWithContent.drawContent()
                         }
                         // draw the graphics layer on the visible canvas
