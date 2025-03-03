@@ -357,7 +357,7 @@ private fun ColorInput(
                 .onFocusChanged { validate() }
                 .onKeyEvent {
                     when (it.key) {
-                        Key.Enter -> {
+                        Key.Enter, Key.NumPadEnter -> {
                             isColorValid = validate()
                             if (isColorValid) onSubmit(color)
                         }
