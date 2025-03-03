@@ -1,7 +1,9 @@
 package des.c5inco.mesh
 
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.intui.standalone.theme.IntUiTheme
 import org.jetbrains.jewel.intui.standalone.theme.darkThemeDefinition
@@ -12,6 +14,10 @@ fun main() = application {
     val themeDefinition = JewelTheme.darkThemeDefinition()
 
     Window(
+        state = rememberWindowState(
+            width = 1024.dp,
+            height = 768.dp
+        ),
         onCloseRequest = ::exitApplication,
         title = "Mesh",
     ) {
