@@ -1,4 +1,4 @@
-package des.c5inco.mesh.ui.views
+package des.c5inco.mesh.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +34,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.toHexStringNoHash
-import des.c5inco.mesh.ui.viewmodel.MainViewModel
+import des.c5inco.mesh.ui.data.AppState
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.foundation.theme.LocalContentColor
 import org.jetbrains.jewel.foundation.theme.LocalTextStyle
@@ -100,7 +100,7 @@ fun ColorDropdown(
         },
     ) {
         ColorSwatch(
-            color = MainViewModel.getColor(selectedColor),
+            color = AppState.getColor(selectedColor),
             modifier = Modifier.padding(vertical = 5.dp, horizontal = 8.dp)
         )
     }

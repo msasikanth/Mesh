@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.ui.GradientCanvas
 import des.c5inco.mesh.ui.SidePanel
-import des.c5inco.mesh.ui.viewmodel.MainViewModel
+import des.c5inco.mesh.ui.data.AppState
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -44,7 +44,7 @@ fun App() {
                     val bitmap = exportGraphicsLayer.toImageBitmap()
                     val awtImage = bitmap.toAwtImage()
 
-                    MainViewModel.saveImage(image = awtImage, scale = exportScale)
+                    AppState.saveImage(image = awtImage, scale = exportScale)
                 }
             },
             selectedColorPoint = selectedColorPoint,

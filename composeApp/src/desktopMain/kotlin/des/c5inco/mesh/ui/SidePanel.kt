@@ -39,11 +39,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.toColor
 import des.c5inco.mesh.common.toHexStringNoHash
-import des.c5inco.mesh.ui.viewmodel.MainViewModel
-import des.c5inco.mesh.ui.views.ColorDropdown
-import des.c5inco.mesh.ui.views.ColorSwatch
-import des.c5inco.mesh.ui.views.DimensionInputField
-import des.c5inco.mesh.ui.views.OffsetInputField
+import des.c5inco.mesh.ui.components.ColorDropdown
+import des.c5inco.mesh.ui.components.ColorSwatch
+import des.c5inco.mesh.ui.components.DimensionInputField
+import des.c5inco.mesh.ui.components.OffsetInputField
+import des.c5inco.mesh.ui.data.AppState
 import kotlinx.coroutines.flow.collectLatest
 import mesh.composeapp.generated.resources.Res
 import mesh.composeapp.generated.resources.distributeEvenly_dark
@@ -111,7 +111,7 @@ fun SidePanel(
                         onCancel = { showColorInput = false },
                         onSubmit = {
                             showColorInput = false
-                            MainViewModel.colors.add(it)
+                            AppState.colors.add(it)
                         }
                     )
                 }
@@ -120,10 +120,10 @@ fun SidePanel(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    MainViewModel.colors.forEachIndexed { index, color ->
+                    AppState.colors.forEachIndexed { index, color ->
                         ColorSwatch(
                             color = color,
-                            modifier = Modifier.clickable { MainViewModel.removeColor(index) }
+                            modifier = Modifier.clickable { AppState.removeColor(index) }
                         )
                     }
                 }
@@ -155,7 +155,7 @@ fun SidePanel(
                     actions = {
                         Tooltip(tooltip = { Text("Export points as code") }) {
                             IconButton(onClick = {
-                                val export = MainViewModel.exportPointsAsCode()
+                                val export = AppState.exportPointsAsCode()
                                 val clipboard = Toolkit.getDefaultToolkit().systemClipboard
                                 clipboard.setContents(StringSelection(export), null)
                                 println(export)
@@ -168,7 +168,7 @@ fun SidePanel(
                         }
                         Spacer(Modifier.width(2.dp))
                         Tooltip(tooltip = { Text("Distribute points evenly") }) {
-                            IconButton(onClick = MainViewModel::distributeOffsetsEvenly) {
+                            IconButton(onClick = AppState::distributeOffsetsEvenly) {
                                 Icon(
                                     painter = painterResource(resource = Res.drawable.distributeEvenly_dark),
                                     contentDescription = "Distribute points evenly"
@@ -180,31 +180,31 @@ fun SidePanel(
                 Spacer(Modifier.height(12.dp))
                 Row {
                     DimensionInputField(
-                        value = MainViewModel.colorPointsRows,
+                        value = AppState.colorPointsRows,
                         enabled = true,
                         paramName = "Rows",
-                        onUpdate = { MainViewModel.updatePointsRows(it.coerceIn(2, 10)) },
+                        onUpdate = { AppState.updatePointsRows(it.coerceIn(2, 10)) },
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(8.dp))
                     DimensionInputField(
-                        value = MainViewModel.colorPointsCols,
+                        value = AppState.colorPointsCols,
                         enabled = true,
                         paramName = "Cols",
-                        onUpdate = { MainViewModel.updatePointsCols(it.coerceIn(2, 10)) },
+                        onUpdate = { AppState.updatePointsCols(it.coerceIn(2, 10)) },
                         modifier = Modifier.weight(1f)
                     )
                 }
                 Spacer(Modifier.height(12.dp))
                 CheckboxRow(
                     text = "Show points",
-                    checked = MainViewModel.showPoints,
-                    onCheckedChange = { MainViewModel.showPoints = it },
+                    checked = AppState.showPoints,
+                    onCheckedChange = { AppState.showPoints = it },
                 )
                 CheckboxRow(
                     text = "Constrain edge points",
-                    checked = MainViewModel.constrainEdgePoints,
-                    onCheckedChange = { MainViewModel.constrainEdgePoints = it },
+                    checked = AppState.constrainEdgePoints,
+                    onCheckedChange = { AppState.constrainEdgePoints = it },
                 )
             }
 
@@ -215,7 +215,7 @@ fun SidePanel(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
-                MainViewModel.colorPoints.forEachIndexed() { rowIdx, colorPoints ->
+                AppState.colorPoints.forEachIndexed() { rowIdx, colorPoints ->
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
@@ -230,11 +230,11 @@ fun SidePanel(
                                 ColorPointRow(
                                     x = point.first.x,
                                     y = point.first.y,
-                                    constrainX = MainViewModel.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
-                                    constrainY = MainViewModel.constrainEdgePoints && (rowIdx == 0 || rowIdx == MainViewModel.colorPoints.size - 1),
+                                    constrainX = AppState.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
+                                    constrainY = AppState.constrainEdgePoints && (rowIdx == 0 || rowIdx == AppState.colorPoints.size - 1),
                                     colorInt = point.second,
                                     onUpdatePoint = { (nextOffset, nextColor) ->
-                                        MainViewModel.updateColorPoint(
+                                        AppState.updateColorPoint(
                                             col = colIdx,
                                             row = rowIdx,
                                             point = Pair(
@@ -405,7 +405,7 @@ private fun ColorPointRow(
     ) {
         ColorDropdown(
             selectedColor = colorInt,
-            colors = MainViewModel.colors,
+            colors = AppState.colors,
             onSelected = { onUpdatePoint(Pair(Offset(x = x, y = y), it)) }
         )
         OffsetInputField(
@@ -444,7 +444,7 @@ private fun CanvasSection(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "${MainViewModel.canvasWidth} x ${MainViewModel.canvasHeight}",
+                text = "${AppState.canvasWidth} x ${AppState.canvasHeight}",
                 style = Typography.editorTextStyle(),
                 color = JewelTheme.globalColors.text.info
             )

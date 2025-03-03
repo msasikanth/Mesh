@@ -1,4 +1,4 @@
-package des.c5inco.mesh.ui.views
+package des.c5inco.mesh.ui.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding

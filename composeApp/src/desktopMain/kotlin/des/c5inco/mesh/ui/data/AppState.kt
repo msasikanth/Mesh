@@ -1,4 +1,4 @@
-package des.c5inco.mesh.ui.viewmodel
+package des.c5inco.mesh.ui.data
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +46,7 @@ private val defaultColorPoints = listOf(
     )
 )
 
-object MainViewModel {
+object AppState {
     var resolution by mutableStateOf(10)
     var showPoints by mutableStateOf(false)
     var constrainEdgePoints by mutableStateOf(true)

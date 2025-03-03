@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.PointCursor
 import des.c5inco.mesh.common.meshGradient
-import des.c5inco.mesh.ui.viewmodel.MainViewModel
+import des.c5inco.mesh.ui.data.AppState
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.theme.colorPalette
 
@@ -41,23 +41,23 @@ fun GradientCanvas(
     onPointDrag: (Pair<Int, Int>?) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
-    val showPoints by remember { MainViewModel::showPoints }
-    val resolution by remember { MainViewModel::resolution }
-    val colors = remember { MainViewModel.colorPoints }
+    val showPoints by remember { AppState::showPoints }
+    val resolution by remember { AppState::resolution }
+    val colors = remember { AppState.colorPoints }
     var exportSize by remember { mutableStateOf(IntSize(0, 0)) }
 
     fun handlePositioned(coordinates: LayoutCoordinates) {
-        MainViewModel.apply {
+        AppState.apply {
             canvasWidth = coordinates.size.width
             canvasHeight = coordinates.size.height
         }
-        exportSize = IntSize(MainViewModel.canvasWidth, MainViewModel.canvasHeight)
+        exportSize = IntSize(AppState.canvasWidth, AppState.canvasHeight)
     }
 
     Column(
         modifier
-            .background(if (MainViewModel.canvasBackgroundColor > -1) {
-                MainViewModel.getColor(MainViewModel.canvasBackgroundColor)
+            .background(if (AppState.canvasBackgroundColor > -1) {
+                AppState.getColor(AppState.canvasBackgroundColor)
             } else {
                 JewelTheme.colorPalette.gray(1)
             })
@@ -67,7 +67,7 @@ fun GradientCanvas(
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onDoubleTap = {
-                            MainViewModel.showPoints = !showPoints
+                            AppState.showPoints = !showPoints
                         }
                     )
                 }
@@ -84,7 +84,7 @@ fun GradientCanvas(
                 val x = (currentOffset.x + (offsetX / maxWidth)).coerceIn(0f, 1f)
                 val y = (currentOffset.y + (offsetY / maxHeight)).coerceIn(0f, 1f)
 
-                MainViewModel.updateColorPoint(
+                AppState.updateColorPoint(
                     col = coordinate.first,
                     row = coordinate.second,
                     point = Pair(Offset(x = x, y = y), currentPoint.second)
@@ -137,7 +137,7 @@ fun GradientCanvas(
                     .meshGradient(
                         points = colors.map { row ->
                             row.map {
-                                it.first to MainViewModel.getColor(it.second)
+                                it.first to AppState.getColor(it.second)
                             }
                         },
                         resolutionX = resolution,
@@ -155,7 +155,7 @@ fun GradientCanvas(
                                 PointCursor(
                                     xIndex = colIdx,
                                     yIndex = rowIdx,
-                                    color = MainViewModel.getColor(col.second),
+                                    color = AppState.getColor(col.second),
                                     modifier = Modifier.pointerInput(Unit) {
                                         detectDragGestures(
                                             onDragStart = {
