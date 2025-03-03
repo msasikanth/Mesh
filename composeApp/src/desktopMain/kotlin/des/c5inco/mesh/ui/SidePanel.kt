@@ -439,6 +439,33 @@ private fun CanvasSection(
         SectionHeader(title = "Canvas")
         Spacer(Modifier.height(16.dp))
 
+        //Row(
+        //    horizontalArrangement = Arrangement.spacedBy(8.dp),
+        //    verticalAlignment = Alignment.CenterVertically,
+        //    modifier = Modifier.fillMaxWidth()
+        //) {
+        //    ColorDropdown(
+        //        selectedColor = AppState.canvasBackgroundColor,
+        //        colors = AppState.colors,
+        //        allowTransparency = true,
+        //        onSelected = { AppState.canvasBackgroundColor = it }
+        //    )
+        //    DimensionInputField(
+        //        value = AppState.canvasWidth,
+        //        enabled = true,
+        //        paramName = "W",
+        //        onUpdate = { AppState.canvasWidth = it },
+        //        modifier = Modifier.weight(1f)
+        //    )
+        //    DimensionInputField(
+        //        value = AppState.canvasHeight,
+        //        enabled = true,
+        //        paramName = "H",
+        //        onUpdate = { AppState.canvasHeight = it },
+        //        modifier = Modifier.weight(1f)
+        //    )
+        //}
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -469,32 +496,5 @@ private fun CanvasSection(
                 }
             }
         }
-
-        //Row(
-        //    horizontalArrangement = Arrangement.spacedBy(8.dp),
-        //    verticalAlignment = Alignment.CenterVertically,
-        //    modifier = Modifier.fillMaxWidth()
-        //) {
-        //    ColorDropdown(
-        //        selectedColor = MainViewModel.canvasBackgroundColor,
-        //        colors = MainViewModel.colors,
-        //        allowTransparency = true,
-        //        onSelected = { MainViewModel.canvasBackgroundColor = it }
-        //    )
-        //    DimensionInputField(
-        //        value = MainViewModel.canvasWidth,
-        //        enabled = true,
-        //        paramName = "W",
-        //        onUpdate = { MainViewModel.canvasWidth = it },
-        //        modifier = Modifier.weight(1f)
-        //    )
-        //    DimensionInputField(
-        //        value = MainViewModel.canvasHeight,
-        //        enabled = true,
-        //        paramName = "H",
-        //        onUpdate = { MainViewModel.canvasHeight = it },
-        //        modifier = Modifier.weight(1f)
-        //    )
-        //}
     }
 }

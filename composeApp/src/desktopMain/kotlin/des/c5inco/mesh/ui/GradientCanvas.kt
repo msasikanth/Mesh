@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -26,6 +26,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.PointCursor
@@ -45,13 +46,19 @@ fun GradientCanvas(
     val resolution by remember { AppState::resolution }
     val colors = remember { AppState.colorPoints }
     var exportSize by remember { mutableStateOf(IntSize(0, 0)) }
+    val density = LocalDensity.current
 
     fun handlePositioned(coordinates: LayoutCoordinates) {
-        AppState.apply {
-            canvasWidth = coordinates.size.width
-            canvasHeight = coordinates.size.height
+        with (density) {
+            val dpWidth = coordinates.size.width.toDp()
+            val dpHeight = coordinates.size.height.toDp()
+
+            AppState.apply {
+                canvasWidth = dpWidth.value.toInt()
+                canvasHeight = dpHeight.value.toInt()
+            }
+            exportSize = IntSize(dpWidth.value.toInt(), dpHeight.value.toInt())
         }
-        exportSize = IntSize(AppState.canvasWidth, AppState.canvasHeight)
     }
 
     Column(
@@ -71,7 +78,6 @@ fun GradientCanvas(
                         }
                     )
                 }
-                .padding(32.dp)
         ) {
             val maxWidth = constraints.maxWidth
             val maxHeight = constraints.maxHeight
@@ -128,7 +134,12 @@ fun GradientCanvas(
                         exportGraphicsLayer.record(
                             size = IntSize(exportSize.width * exportScale, exportSize.height * exportScale),
                         ) {
-                            this@drawWithContent.drawContent()
+                            scale(
+                                scale = 1f / density.density,
+                                pivot = Offset.Zero,
+                            ) {
+                                this@drawWithContent.drawContent()
+                            }
                         }
 
                         // Draw the visible graphics layer on the canvas
