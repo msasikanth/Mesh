@@ -27,7 +27,7 @@ fun DimensionInputField(
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
-    val textFieldState = remember { TextFieldState(value.toString()) }
+    val textFieldState = remember(value) { TextFieldState(value.toString()) }
 
     LaunchedEffect(Unit) {
         snapshotFlow { textFieldState.text }
