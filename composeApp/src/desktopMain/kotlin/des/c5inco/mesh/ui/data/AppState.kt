@@ -52,8 +52,8 @@ object AppState {
     var constrainEdgePoints by mutableStateOf(true)
     val colors = defaultColors.toMutableStateList()
     var canvasBackgroundColor: Int by mutableStateOf(-1)
-    var canvasWidth: Int by mutableStateOf(0)
-    var canvasHeight: Int by mutableStateOf(0)
+    var canvasWidth: Int by mutableStateOf(200)
+    var canvasHeight: Int by mutableStateOf(100)
     var colorPointsRows by mutableStateOf(3)
     var colorPointsCols by mutableStateOf(4)
     val colorPoints = defaultColorPoints.toMutableStateList()
@@ -221,7 +221,8 @@ object AppState {
     fun saveImage(image: BufferedImage, scale: Int) {
         try {
             val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
-            val file = File(desktopPath, "mesh-export-${scale}x.png") // You can change the filename and extension
+            val scaleSuffix = if (scale == 1) "" else "@${scale}x"
+            val file = File(desktopPath, "mesh-export$scaleSuffix.png") // You can change the filename and extension
 
             ImageIO.write(image, "png", file)
             println("Image saved to: ${file.absolutePath}")
