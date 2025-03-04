@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,10 +45,14 @@ import des.c5inco.mesh.ui.components.ColorSwatch
 import des.c5inco.mesh.ui.components.DimensionInputField
 import des.c5inco.mesh.ui.components.OffsetInputField
 import des.c5inco.mesh.ui.data.AppState
+import des.c5inco.mesh.ui.data.DimensionMode
 import kotlinx.coroutines.flow.collectLatest
 import mesh.composeapp.generated.resources.Res
 import mesh.composeapp.generated.resources.distributeEvenly_dark
 import mesh.composeapp.generated.resources.featureCodeBlock_dark
+import mesh.composeapp.generated.resources.modeFilled_dark
+import mesh.composeapp.generated.resources.modeFixed_dark
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
@@ -183,6 +188,8 @@ fun SidePanel(
                         value = AppState.colorPointsRows,
                         enabled = true,
                         paramName = "Rows",
+                        min = 2,
+                        max = 10,
                         onUpdate = { AppState.updatePointsRows(it.coerceIn(2, 10)) },
                         modifier = Modifier.weight(1f)
                     )
@@ -191,6 +198,8 @@ fun SidePanel(
                         value = AppState.colorPointsCols,
                         enabled = true,
                         paramName = "Cols",
+                        min = 2,
+                        max = 10,
                         onUpdate = { AppState.updatePointsCols(it.coerceIn(2, 10)) },
                         modifier = Modifier.weight(1f)
                     )
@@ -432,6 +441,10 @@ private fun CanvasSection(
     onExport: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val canvasWidthMode by AppState.canvasWidthMode.collectAsState()
+    val canvasHeightMode by AppState.canvasHeightMode.collectAsState()
+    val canvasWidth by remember { AppState::canvasWidth }
+    val canvasHeight by remember { AppState::canvasHeight }
 
     Column(
         modifier = modifier.padding(16.dp),
@@ -439,32 +452,60 @@ private fun CanvasSection(
         SectionHeader(title = "Canvas")
         Spacer(Modifier.height(16.dp))
 
-        //Row(
-        //    horizontalArrangement = Arrangement.spacedBy(8.dp),
-        //    verticalAlignment = Alignment.CenterVertically,
-        //    modifier = Modifier.fillMaxWidth()
-        //) {
-        //    ColorDropdown(
-        //        selectedColor = AppState.canvasBackgroundColor,
-        //        colors = AppState.colors,
-        //        allowTransparency = true,
-        //        onSelected = { AppState.canvasBackgroundColor = it }
-        //    )
-        //    DimensionInputField(
-        //        value = AppState.canvasWidth,
-        //        enabled = true,
-        //        paramName = "W",
-        //        onUpdate = { AppState.canvasWidth = it },
-        //        modifier = Modifier.weight(1f)
-        //    )
-        //    DimensionInputField(
-        //        value = AppState.canvasHeight,
-        //        enabled = true,
-        //        paramName = "H",
-        //        onUpdate = { AppState.canvasHeight = it },
-        //        modifier = Modifier.weight(1f)
-        //    )
-        //}
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ColorDropdown(
+                selectedColor = AppState.canvasBackgroundColor,
+                colors = AppState.colors,
+                allowTransparency = true,
+                onSelected = { AppState.canvasBackgroundColor = it }
+            )
+            DimensionInputField(
+                value = canvasWidth,
+                enabled = canvasWidthMode == DimensionMode.Fixed,
+                paramName = "W",
+                min = 100,
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            AppState.updateCanvasWidthMode()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(getModeIcon(canvasWidthMode)),
+                            contentDescription = null
+                        )
+                    }
+                },
+                onUpdate = { AppState.canvasWidth = it },
+                modifier = Modifier.weight(1f)
+            )
+            DimensionInputField(
+                value = canvasHeight,
+                enabled = canvasHeightMode == DimensionMode.Fixed,
+                paramName = "H",
+                min = 100,
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            AppState.updateCanvasHeightMode()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(getModeIcon(canvasHeightMode)),
+                            contentDescription = null
+                        )
+                    }
+                },
+                onUpdate = { AppState.canvasHeight = it },
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -496,5 +537,13 @@ private fun CanvasSection(
                 }
             }
         }
+    }
+}
+
+private fun getModeIcon(mode: DimensionMode): DrawableResource {
+    return if (mode == DimensionMode.Fixed) {
+        Res.drawable.modeFixed_dark
+    } else {
+        Res.drawable.modeFilled_dark
     }
 }

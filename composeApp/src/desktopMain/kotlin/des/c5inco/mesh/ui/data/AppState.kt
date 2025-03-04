@@ -11,6 +11,8 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.asClassName
 import des.c5inco.mesh.common.toHexStringNoHash
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -46,23 +48,44 @@ private val defaultColorPoints = listOf(
     )
 )
 
+enum class DimensionMode {
+    Fixed,
+    Fill
+}
+
 object AppState {
     var resolution by mutableStateOf(10)
     var showPoints by mutableStateOf(false)
     var constrainEdgePoints by mutableStateOf(true)
     val colors = defaultColors.toMutableStateList()
     var canvasBackgroundColor: Int by mutableStateOf(-1)
-    var canvasFillMaxSize: Boolean by mutableStateOf(false)
+    private val _canvasWidthMode = MutableStateFlow(DimensionMode.Fill)
+    val canvasWidthMode = _canvasWidthMode.asStateFlow()
+
+    fun updateCanvasWidthMode() {
+        _canvasWidthMode.value = if (_canvasWidthMode.value == DimensionMode.Fill) {
+            DimensionMode.Fixed
+        } else {
+            DimensionMode.Fill
+        }
+    }
+
+    private val _canvasHeightMode = MutableStateFlow(DimensionMode.Fill)
+    val canvasHeightMode = _canvasHeightMode.asStateFlow()
+
+    fun updateCanvasHeightMode() {
+        _canvasHeightMode.value = if (_canvasHeightMode.value == DimensionMode.Fill) {
+            DimensionMode.Fixed
+        } else {
+            DimensionMode.Fill
+        }
+    }
+
     var canvasWidth: Int by mutableStateOf(200)
     var canvasHeight: Int by mutableStateOf(100)
     var colorPointsRows by mutableStateOf(3)
     var colorPointsCols by mutableStateOf(4)
     val colorPoints = defaultColorPoints.toMutableStateList()
-
-    fun updateCanvasSize(width: Int, height: Int) {
-        canvasWidth = width
-        canvasHeight = height
-    }
 
     fun updatePointsRows(rows: Int) {
         colorPointsRows = rows
