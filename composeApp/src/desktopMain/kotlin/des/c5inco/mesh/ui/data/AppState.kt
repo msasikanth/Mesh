@@ -52,6 +52,7 @@ object AppState {
     var constrainEdgePoints by mutableStateOf(true)
     val colors = defaultColors.toMutableStateList()
     var canvasBackgroundColor: Int by mutableStateOf(-1)
+    var canvasFillMaxSize: Boolean by mutableStateOf(false)
     var canvasWidth: Int by mutableStateOf(200)
     var canvasHeight: Int by mutableStateOf(100)
     var colorPointsRows by mutableStateOf(3)
