@@ -68,9 +68,10 @@ fun DimensionInputField(
             .onKeyEvent {
                 when (it.key) {
                     Key.Enter,
+                    Key.NumPadEnter,
                     Key.Tab -> {
                         validate()
-                        if (it.key == Key.Enter) {
+                        if (it.key == Key.Enter || it.key == Key.NumPadEnter) {
                             focusManager.clearFocus()
                         } else {
                             return@onKeyEvent false
