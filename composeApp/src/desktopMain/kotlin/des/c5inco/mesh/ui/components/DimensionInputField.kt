@@ -19,6 +19,8 @@ import org.jetbrains.jewel.ui.component.TextField
 @Composable
 fun DimensionInputField(
     value: Int,
+    min: Int? = null,
+    max: Int? = null,
     enabled: Boolean = false,
     paramName: String,
     onUpdate: (Int) -> Unit,
@@ -42,7 +44,17 @@ fun DimensionInputField(
     fun validate() {
         try {
             textFieldState.text.toString().toIntOrNull()?.let { next ->
-                val nextValue = next.coerceIn(2, 10)
+                val nextValue = next.let {
+                    if (min != null && max != null) {
+                        it.coerceIn(min, max)
+                    } else if (min != null) {
+                        it.coerceAtLeast(min)
+                    } else if (max != null) {
+                        it.coerceAtMost(max)
+                    } else {
+                        it
+                    }
+                }
                 onUpdate(nextValue)
                 textFieldState.edit { replace(0, textFieldState.text.length, nextValue.toString()) }
             } ?: run {
