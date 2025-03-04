@@ -509,14 +509,10 @@ private fun CanvasSection(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Text(
-                text = "${AppState.canvasWidth} x ${AppState.canvasHeight}",
-                style = Typography.editorTextStyle(),
-                color = JewelTheme.globalColors.text.info
-            )
-            Spacer(Modifier.width(8.dp))
             Link(
                 text = "Export",
                 onClick = onExport
