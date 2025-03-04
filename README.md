@@ -24,7 +24,7 @@ Built as a [Compose Desktop](https://www.jetbrains.com/compose-multiplatform/) a
 
 - [x] Export code for gradient
 - [x] Export gradient as image
-- [ ] Ability to change canvas size and background color
+- [x] Ability to change canvas size and background color
 - [ ] Allow changing resolution of gradient
 - [ ] Save/load gradient configurations
 - [ ] Multiple gradient presets
