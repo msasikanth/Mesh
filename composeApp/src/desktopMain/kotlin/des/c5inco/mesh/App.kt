@@ -48,7 +48,7 @@ fun App() {
                 }
             },
             selectedColorPoint = selectedColorPoint,
-            modifier = Modifier.width(250.dp)
+            modifier = Modifier.width(280.dp)
         )
     }
 }
