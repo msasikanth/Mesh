@@ -29,6 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -83,6 +85,8 @@ fun SidePanel(
     selectedColorPoint: Pair<Int, Int>? = null,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+    
     VerticallyScrollableContainer(
         modifier = modifier
             .fillMaxHeight()
@@ -100,7 +104,10 @@ fun SidePanel(
                     actions = {
                         Tooltip(tooltip = { Text("Add color") }) {
                             IconButton(
-                                onClick = { showColorInput = true }
+                                onClick = {
+                                    focusManager.clearFocus()
+                                    showColorInput = true
+                                }
                             ) {
                                 Icon(
                                     key = AllIconsKeys.General.Add,
@@ -165,6 +172,7 @@ fun SidePanel(
                                 val clipboard = Toolkit.getDefaultToolkit().systemClipboard
                                 clipboard.setContents(StringSelection(export), null)
                                 println(export)
+                                focusManager.clearFocus()
                             }) {
                                 Icon(
                                     painter = painterResource(resource = Res.drawable.featureCodeBlock_dark),
@@ -174,7 +182,12 @@ fun SidePanel(
                         }
                         Spacer(Modifier.width(2.dp))
                         Tooltip(tooltip = { Text("Distribute points evenly") }) {
-                            IconButton(onClick = AppState::distributeOffsetsEvenly) {
+                            IconButton(
+                                onClick = {
+                                    AppState.distributeOffsetsEvenly()
+                                    focusManager.clearFocus()
+                                }
+                            ) {
                                 Icon(
                                     painter = painterResource(resource = Res.drawable.distributeEvenly_dark),
                                     contentDescription = "Distribute points evenly"
@@ -306,8 +319,10 @@ private fun ColorInput(
     var color: Color by remember { mutableStateOf(Color.LightGray) }
     val textFieldState = remember { TextFieldState() }
     var isColorValid by remember { mutableStateOf(true) }
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
         snapshotFlow { textFieldState.text }
             .collectLatest {
                 var text = it.toString()
@@ -364,6 +379,7 @@ private fun ColorInput(
             outline = if (!isColorValid) Outline.Error else Outline.None,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
             modifier = Modifier
+                .focusRequester(focusRequester)
                 .onFocusChanged { validate() }
                 .onKeyEvent {
                     when (it.key) {
