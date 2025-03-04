@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -434,6 +435,7 @@ private fun ColorPointRow(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CanvasSection(
     exportScale: Int,
@@ -445,6 +447,7 @@ private fun CanvasSection(
     val canvasHeightMode by AppState.canvasHeightMode.collectAsState()
     val canvasWidth by remember { AppState::canvasWidth }
     val canvasHeight by remember { AppState::canvasHeight }
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = modifier.padding(16.dp),
@@ -469,15 +472,20 @@ private fun CanvasSection(
                 paramName = "W",
                 min = 100,
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            AppState.updateCanvasWidthMode()
+                    Tooltip(tooltip = {
+                        Text(text = "Toggle to ${if (canvasWidthMode == DimensionMode.Fixed) "Filled" else "Fixed"}")
+                    }) {
+                        IconButton(
+                            onClick = {
+                                AppState.updateCanvasWidthMode()
+                                focusManager.clearFocus()
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(getModeIcon(canvasWidthMode)),
+                                contentDescription = null
+                            )
                         }
-                    ) {
-                        Icon(
-                            painter = painterResource(getModeIcon(canvasWidthMode)),
-                            contentDescription = null
-                        )
                     }
                 },
                 onUpdate = { AppState.canvasWidth = it },
@@ -489,15 +497,20 @@ private fun CanvasSection(
                 paramName = "H",
                 min = 100,
                 trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            AppState.updateCanvasHeightMode()
+                    Tooltip(tooltip = {
+                        Text(text = "Toggle to ${if (canvasHeightMode == DimensionMode.Fixed) "Filled" else "Fixed"}")
+                    }) {
+                        IconButton(
+                            onClick = {
+                                AppState.updateCanvasHeightMode()
+                                focusManager.clearFocus()
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(getModeIcon(canvasHeightMode)),
+                                contentDescription = null
+                            )
                         }
-                    ) {
-                        Icon(
-                            painter = painterResource(getModeIcon(canvasHeightMode)),
-                            contentDescription = null
-                        )
                     }
                 },
                 onUpdate = { AppState.canvasHeight = it },
