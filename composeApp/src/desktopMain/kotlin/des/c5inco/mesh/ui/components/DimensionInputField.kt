@@ -24,6 +24,7 @@ fun DimensionInputField(
     enabled: Boolean = false,
     paramName: String,
     onUpdate: (Int) -> Unit,
+    trailingIcon: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -76,6 +77,7 @@ fun DimensionInputField(
                     .padding(end = 6.dp)
             )
         },
+        trailingIcon = trailingIcon,
         modifier = modifier
             .onKeyEvent {
                 when (it.key) {
