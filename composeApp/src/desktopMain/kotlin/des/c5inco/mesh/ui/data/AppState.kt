@@ -173,7 +173,7 @@ object AppState {
                 if (point.second == index) {
                     // Reset to first color
                     Pair(point.first, 0)
-                } else if (point.second > 0) {
+                } else if (point.second > 0 && index != colors.size - 1) {
                     // Shift non-zero colors left
                     Pair(point.first, point.second - 1)
                 } else {
