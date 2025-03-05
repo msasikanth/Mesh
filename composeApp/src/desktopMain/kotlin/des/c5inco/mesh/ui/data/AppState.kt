@@ -11,8 +11,13 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.asClassName
 import des.c5inco.mesh.common.toHexStringNoHash
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -54,6 +59,8 @@ enum class DimensionMode {
 }
 
 object AppState {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     var resolution by mutableStateOf(10)
     var showPoints by mutableStateOf(false)
     var constrainEdgePoints by mutableStateOf(true)
@@ -61,6 +68,15 @@ object AppState {
     var canvasBackgroundColor: Int by mutableStateOf(-1)
     private val _canvasWidthMode = MutableStateFlow(DimensionMode.Fill)
     val canvasWidthMode = _canvasWidthMode.asStateFlow()
+
+    private val _notificationFlow = MutableSharedFlow<String>()
+    val notificationFlow = _notificationFlow
+
+    fun sendNotification(message: String) {
+        scope.launch {
+            _notificationFlow.emit(message)
+        }
+    }
 
     fun updateCanvasWidthMode() {
         _canvasWidthMode.value = if (_canvasWidthMode.value == DimensionMode.Fill) {
