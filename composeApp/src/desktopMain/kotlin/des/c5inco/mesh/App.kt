@@ -3,12 +3,7 @@ package des.c5inco.mesh
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.toAwtImage
@@ -45,6 +40,7 @@ fun App() {
                     val awtImage = bitmap.toAwtImage()
 
                     AppState.saveImage(image = awtImage, scale = exportScale)
+                    AppState.sendNotification("🖼 Exported gradient at ${exportScale}x️")
                 }
             },
             selectedColorPoint = selectedColorPoint,
