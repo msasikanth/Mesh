@@ -262,9 +262,11 @@ object AppState {
         try {
             val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
             val scaleSuffix = if (scale == 1) "" else "@${scale}x"
-            val file = File(desktopPath, "mesh-export$scaleSuffix.png") // You can change the filename and extension
+            val filename = "mesh-export$scaleSuffix.png"
+            val file = File(desktopPath, filename) // You can change the filename and extension
 
             ImageIO.write(image, "png", file)
+            sendNotification("🖼 Exported $filename to ${file.absolutePath.substringBeforeLast("/")}")
             println("Image saved to: ${file.absolutePath}")
         } catch (e: Exception) {
             println("Error saving image: ${e.message}")
