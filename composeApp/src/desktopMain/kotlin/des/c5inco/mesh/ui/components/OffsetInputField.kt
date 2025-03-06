@@ -66,6 +66,5 @@ fun OffsetInputField(
                 }
                 return@onKeyEvent true
             }
-//            .width(84.dp)
     )
 }

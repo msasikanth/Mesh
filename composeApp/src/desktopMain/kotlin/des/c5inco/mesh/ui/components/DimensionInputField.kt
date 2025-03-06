@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -79,6 +80,7 @@ fun DimensionInputField(
         },
         trailingIcon = trailingIcon,
         modifier = modifier
+            .onFocusChanged { validate() }
             .onKeyEvent {
                 when (it.key) {
                     Key.Enter,
