@@ -1,9 +1,6 @@
 package des.c5inco.mesh.ui.data
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.squareup.kotlinpoet.CodeBlock
@@ -61,11 +58,14 @@ enum class DimensionMode {
 object AppState {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    var resolution by mutableStateOf(10)
+    const val MAX_BLUR_LEVEL = 40
+
+    var resolution by mutableIntStateOf(10)
+    var blurLevel by mutableStateOf(0f)
     var showPoints by mutableStateOf(false)
     var constrainEdgePoints by mutableStateOf(true)
     val colors = defaultColors.toMutableStateList()
-    var canvasBackgroundColor: Int by mutableStateOf(-1)
+    var canvasBackgroundColor: Int by mutableIntStateOf(-1)
     private val _canvasWidthMode = MutableStateFlow(DimensionMode.Fill)
     val canvasWidthMode = _canvasWidthMode.asStateFlow()
 

@@ -431,6 +431,7 @@ private fun CanvasSection(
     val canvasHeightMode by AppState.canvasHeightMode.collectAsState()
     val canvasWidth by remember { AppState::canvasWidth }
     val canvasHeight by remember { AppState::canvasHeight }
+    val blurLevel by remember { AppState::blurLevel }
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -529,6 +530,22 @@ private fun CanvasSection(
                     }
                 }
             }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Blur")
+            Spacer(Modifier.width(16.dp))
+            Slider(
+                value = blurLevel,
+                onValueChange = {
+                    AppState.blurLevel = it
+                }
+            )
         }
     }
 }

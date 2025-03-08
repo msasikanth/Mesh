@@ -26,6 +26,7 @@ import des.c5inco.mesh.common.PointCursor
 import des.c5inco.mesh.common.meshGradient
 import des.c5inco.mesh.ui.components.CanvasSnackbar
 import des.c5inco.mesh.ui.data.AppState
+import des.c5inco.mesh.ui.data.AppState.MAX_BLUR_LEVEL
 import des.c5inco.mesh.ui.data.DimensionMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -34,6 +35,7 @@ import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.theme.colorPalette
 import org.jetbrains.jewel.ui.util.thenIf
+import kotlin.math.roundToInt
 
 @Composable
 fun GradientCanvas(
@@ -188,6 +190,7 @@ fun GradientCanvas(
                                 it.first to AppState.getColor(it.second)
                             }
                         },
+                        blurLevel = (AppState.blurLevel * MAX_BLUR_LEVEL).roundToInt(),
                         resolutionX = resolution,
                         resolutionY = resolution,
                         showPoints = showPoints

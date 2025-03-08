@@ -46,19 +46,22 @@ fun DimensionInputField(
     fun validate() {
         try {
             textFieldState.text.toString().toIntOrNull()?.let { next ->
-                val nextValue = next.let {
-                    if (min != null && max != null) {
-                        it.coerceIn(min, max)
-                    } else if (min != null) {
-                        it.coerceAtLeast(min)
-                    } else if (max != null) {
-                        it.coerceAtMost(max)
-                    } else {
-                        it
+                if (next != value) {
+                    val nextValue = next.let {
+                        if (min != null && max != null) {
+                            it.coerceIn(min, max)
+                        } else if (min != null) {
+                            it.coerceAtLeast(min)
+                        } else if (max != null) {
+                            it.coerceAtMost(max)
+                        } else {
+                            it
+                        }
                     }
+
+                    onUpdate(nextValue)
+                    textFieldState.edit { replace(0, textFieldState.text.length, nextValue.toString()) }
                 }
-                onUpdate(nextValue)
-                textFieldState.edit { replace(0, textFieldState.text.length, nextValue.toString()) }
             } ?: run {
                 reset()
             }
