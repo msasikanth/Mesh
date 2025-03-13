@@ -2,6 +2,7 @@ package des.c5inco.mesh.ui.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -11,6 +12,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.formatFloat
 import org.jetbrains.jewel.ui.component.TextField
@@ -44,19 +46,18 @@ fun OffsetInputField(
         leadingIcon = {
             ParameterSwatch(text = paramName, modifier = Modifier.size(16.dp).padding(end = 6.dp))
         },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        onKeyboardAction = {
+            validate()
+            focusManager.clearFocus()
+        },
         modifier = modifier
             .onFocusChanged { validate() }
             .onKeyEvent {
                 when (it.key) {
-                    Key.Enter,
-                    Key.NumPadEnter,
                     Key.Tab -> {
                         validate()
-                        if (it.key == Key.Enter || it.key == Key.NumPadEnter) {
-                            focusManager.clearFocus()
-                        } else {
-                            return@onKeyEvent false
-                        }
+                        return@onKeyEvent false
                     }
 
                     Key.Escape -> {
