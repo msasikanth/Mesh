@@ -1,0 +1,55 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "01dae16d67504452b250cfabb63c0deb",
+    "entities": [
+      {
+        "tableName": "SavedColor",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `red` INTEGER NOT NULL, `green` INTEGER NOT NULL, `blue` INTEGER NOT NULL, `alpha` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "red",
+            "columnName": "red",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "green",
+            "columnName": "green",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blue",
+            "columnName": "blue",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alpha",
+            "columnName": "alpha",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '01dae16d67504452b250cfabb63c0deb')"
+    ]
+  }
+}

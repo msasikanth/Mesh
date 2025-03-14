@@ -8,6 +8,7 @@ kotlinx-coroutines = "1.10.1"
 kotlinpoet = "2.1.0"
 kotlinx-serialization-json = "1.8.0"
 room = "2.7.0-rc02"
+sqlite = "2.5.0-rc02"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -20,8 +21,8 @@ kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotli
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room"}
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 
 [plugins]
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }

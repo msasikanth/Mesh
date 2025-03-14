@@ -17,20 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.unit.dp
+import des.c5inco.mesh.data.AppDataRepository
 import des.c5inco.mesh.data.AppState
-import des.c5inco.mesh.data.des.c5inco.mesh.ui.data.AppDatabase
-import des.c5inco.mesh.data.des.c5inco.mesh.ui.data.DbColor
 import des.c5inco.mesh.ui.GradientCanvas
 import des.c5inco.mesh.ui.SidePanel
 import kotlinx.coroutines.launch
+import model.SavedColor
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
 
 @Composable
 fun App(
-    data: AppDatabase
+    repository: AppDataRepository
 ) {
-    val colors by data.getColors().collectAsState(initial = emptyList())
+    val colors2 by repository.getColors().collectAsState(initial = emptyList())
 
     Row(
         Modifier.fillMaxSize()
@@ -45,7 +45,7 @@ fun App(
                 .background(JewelTheme.globalColors.panelBackground)
                 .fillMaxHeight()
         ) {
-            colors.forEach { color ->
+            colors2.forEach { color ->
                 Text(color.toString())
             }
         }
@@ -68,8 +68,16 @@ fun App(
                 }
             },
             onAddColor = {
-                data.addColor(
-                    DbColor(
+                //data.addColor(
+                //    DbColor(
+                //        red = (255 * it.red).toInt(),
+                //        green = (255 * it.green).toInt(),
+                //        blue = (255 * it.blue).toInt(),
+                //        alpha = it.alpha
+                //    )
+                //)
+                repository.addColor(
+                    SavedColor(
                         red = (255 * it.red).toInt(),
                         green = (255 * it.green).toInt(),
                         blue = (255 * it.blue).toInt(),
