@@ -8,6 +8,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
+    //alias(libs.plugins.ksp)
+    //alias(libs.plugins.room)
 }
 
 repositories {
@@ -38,6 +41,10 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(kotlinDocumentStore.leveldb)
+            implementation(libs.kotlinx.serialization.json)
+            //implementation(libs.room.runtime)
+            //implementation(libs.room.ktx)
         }
         desktopMain.dependencies {
             // See https://github.com/JetBrains/Jewel/releases for the release notes

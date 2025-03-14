@@ -27,6 +27,11 @@ dependencyResolutionManagement {
         }
         mavenCentral()
     }
+    versionCatalogs {
+        create("kotlinDocumentStore") {
+            from("com.github.lamba92:kotlin-document-store-version-catalog:1.0.4")
+        }
+    }
 }
 
 include(":composeApp")
