@@ -34,7 +34,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.toHexStringNoHash
-import des.c5inco.mesh.ui.data.AppState
+import des.c5inco.mesh.data.AppState
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.foundation.theme.LocalContentColor
 import org.jetbrains.jewel.foundation.theme.LocalTextStyle

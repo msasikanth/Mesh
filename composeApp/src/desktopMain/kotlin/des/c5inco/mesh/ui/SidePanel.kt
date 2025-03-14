@@ -43,12 +43,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.toColor
 import des.c5inco.mesh.common.toHexStringNoHash
+import des.c5inco.mesh.data.AppState
+import des.c5inco.mesh.data.DimensionMode
 import des.c5inco.mesh.ui.components.ColorDropdown
 import des.c5inco.mesh.ui.components.ColorSwatch
 import des.c5inco.mesh.ui.components.DimensionInputField
 import des.c5inco.mesh.ui.components.OffsetInputField
-import des.c5inco.mesh.ui.data.AppState
-import des.c5inco.mesh.ui.data.DimensionMode
 import kotlinx.coroutines.flow.collectLatest
 import mesh.composeapp.generated.resources.Res
 import mesh.composeapp.generated.resources.distributeEvenly_dark

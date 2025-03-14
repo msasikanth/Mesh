@@ -1,6 +1,10 @@
-package des.c5inco.mesh.ui.data
+package des.c5inco.mesh.data
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.squareup.kotlinpoet.CodeBlock
