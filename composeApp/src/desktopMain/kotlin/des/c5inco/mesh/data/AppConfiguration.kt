@@ -58,6 +58,10 @@ class AppConfiguration(
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
+    companion object {
+        const val MAX_BLUR_LEVEL = 40
+    }
+
     var canvasBackgroundColor = MutableStateFlow(-1L)
     var resolution = MutableStateFlow(resolution)
     var blurLevel = MutableStateFlow(blurLevel)
@@ -75,6 +79,10 @@ class AppConfiguration(
             constrainEdgePoints = constrainEdgePoints,
         )
     )
+
+    fun updateBlurLevel(level: Float) {
+        blurLevel.update { level }
+    }
 
     fun updateCanvasBackgroundColor(color: Long) {
         canvasBackgroundColor.update { color }

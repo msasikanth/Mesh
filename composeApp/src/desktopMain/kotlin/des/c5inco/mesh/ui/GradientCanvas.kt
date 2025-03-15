@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.PointCursor
 import des.c5inco.mesh.common.meshGradient
+import des.c5inco.mesh.data.AppConfiguration.Companion.MAX_BLUR_LEVEL
 import des.c5inco.mesh.data.AppState
-import des.c5inco.mesh.data.AppState.MAX_BLUR_LEVEL
 import des.c5inco.mesh.data.DimensionMode
 import des.c5inco.mesh.ui.components.CanvasSnackbar
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +59,7 @@ fun GradientCanvas(
     exportGraphicsLayer: GraphicsLayer,
     exportScale: Int,
     resolution: Int,
+    blurLevel: Float = 0f,
     meshPoints: List<List<Pair<Offset, Long>>>,
     showPoints: Boolean,
     canvasBackgroundColor: Long,
@@ -213,7 +214,7 @@ fun GradientCanvas(
                                 it.first to availableColors.findColor(it.second)
                             }
                         },
-                        blurLevel = (AppState.blurLevel * MAX_BLUR_LEVEL).roundToInt(),
+                        blurLevel = (blurLevel * MAX_BLUR_LEVEL).roundToInt(),
                         resolutionX = resolution,
                         resolutionY = resolution,
                         showPoints = showPoints

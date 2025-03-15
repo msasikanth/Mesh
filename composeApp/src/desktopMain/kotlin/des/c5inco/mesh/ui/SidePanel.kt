@@ -86,11 +86,13 @@ fun SidePanel(
     presetColors: List<SavedColor> = emptyList(),
     customColors: List<SavedColor> = emptyList(),
     canvasBackgroundColor: Long,
+    blurLevel: Float = 0f,
     totalRows: Int,
     totalCols: Int,
     meshPoints: List<List<Pair<Offset, Long>>> = emptyList(),
     showPoints: Boolean,
     constrainEdgePoints: Boolean,
+    onBlurLevelChange: (Float) -> Unit = {},
     onUpdateTotalRows: (Int) -> Unit = {},
     onUpdateTotalCols: (Int) -> Unit = {},
     onUpdateMeshPoint: (row: Int, col: Int, point: Pair<Offset, Long>) -> Unit,
@@ -188,10 +190,12 @@ fun SidePanel(
             CanvasSection(
                 exportScale = exportScale,
                 backgroundColor = canvasBackgroundColor,
+                blurLevel = blurLevel,
                 availableColors = presetColors + customColors,
                 onExportScaleChange = onExportScaleChange,
                 onExport = onExport,
                 onBackgroundColorChange = { onCanvasBackgroundColorChange(it) },
+                onBlurLevelChange = { onBlurLevelChange(it) }
             )
 
             Divider(
@@ -489,16 +493,17 @@ private fun CanvasSection(
     exportScale: Int,
     availableColors: List<SavedColor> = emptyList(),
     backgroundColor: Long,
+    blurLevel: Float,
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
     onBackgroundColorChange: (Long) -> Unit = {},
+    onBlurLevelChange: (Float) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val canvasWidthMode by AppState.canvasWidthMode.collectAsState()
     val canvasHeightMode by AppState.canvasHeightMode.collectAsState()
     val canvasWidth by remember { AppState::canvasWidth }
     val canvasHeight by remember { AppState::canvasHeight }
-    val blurLevel by remember { AppState::blurLevel }
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -609,9 +614,7 @@ private fun CanvasSection(
             Spacer(Modifier.width(16.dp))
             Slider(
                 value = blurLevel,
-                onValueChange = {
-                    AppState.blurLevel = it
-                }
+                onValueChange = onBlurLevelChange
             )
         }
     }
