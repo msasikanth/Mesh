@@ -61,6 +61,7 @@ fun GradientCanvas(
     resolution: Int,
     meshPoints: List<List<Pair<Offset, Long>>>,
     showPoints: Boolean,
+    canvasBackgroundColor: Long,
     availableColors: List<SavedColor>,
     onTogglePoints: () -> Unit = {},
     onPointDragStartEnd: (Pair<Int, Int>?) -> Unit = { _ -> },
@@ -103,8 +104,8 @@ fun GradientCanvas(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .background(if (AppState.canvasBackgroundColor > -1) {
-                AppState.getColor(AppState.canvasBackgroundColor)
+            .background(if (canvasBackgroundColor > -1L) {
+                availableColors.findColor(canvasBackgroundColor)
             } else {
                 JewelTheme.colorPalette.gray(1)
             })
