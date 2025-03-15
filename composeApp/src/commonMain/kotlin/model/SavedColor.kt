@@ -28,12 +28,17 @@ fun SavedColor.toColor(): Color {
     )
 }
 
-fun Color.toSavedColor(preset: Boolean = false): SavedColor {
+fun Color.toSavedColor(uid: Long = 0, preset: Boolean = false): SavedColor {
     return SavedColor(
+        uid = uid,
         red = (red * 255).toInt(),
         green = (green * 255).toInt(),
         blue = (blue * 255).toInt(),
         alpha = alpha,
         preset = preset
     )
+}
+
+fun List<SavedColor>.findColor(uid: Long): Color {
+    return find { it.uid == uid }?.toColor() ?: Color.Transparent
 }
