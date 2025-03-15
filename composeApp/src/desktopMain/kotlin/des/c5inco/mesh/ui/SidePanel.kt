@@ -175,6 +175,7 @@ fun SidePanel(
 
             CanvasSection(
                 exportScale = exportScale,
+                availableColors = presetColors + customColors,
                 onExportScaleChange = onExportScaleChange,
                 onExport = onExport
             )
@@ -283,6 +284,7 @@ fun SidePanel(
                                     constrainX = AppState.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
                                     constrainY = AppState.constrainEdgePoints && (rowIdx == 0 || rowIdx == AppState.colorPoints.size - 1),
                                     colorInt = point.second,
+                                    availableColors = presetColors + customColors,
                                     onUpdatePoint = { (nextOffset, nextColor) ->
                                         AppState.updateColorPoint(
                                             col = colIdx,
@@ -448,6 +450,7 @@ private fun ColorPointRow(
     constrainX: Boolean,
     constrainY: Boolean,
     colorInt: Int,
+    availableColors: List<SavedColor> = emptyList(),
     onUpdatePoint: (Pair<Offset, Int>) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
@@ -458,7 +461,7 @@ private fun ColorPointRow(
     ) {
         ColorDropdown(
             selectedColor = colorInt,
-            colors = AppState.colors,
+            colors = availableColors,
             onSelected = { onUpdatePoint(Pair(Offset(x = x, y = y), it)) }
         )
         OffsetInputField(
@@ -482,6 +485,7 @@ private fun ColorPointRow(
 @Composable
 private fun CanvasSection(
     exportScale: Int,
+    availableColors: List<SavedColor> = emptyList(),
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -506,7 +510,7 @@ private fun CanvasSection(
         ) {
             ColorDropdown(
                 selectedColor = AppState.canvasBackgroundColor,
-                colors = AppState.colors,
+                colors = availableColors,
                 allowTransparency = true,
                 onSelected = { AppState.canvasBackgroundColor = it }
             )

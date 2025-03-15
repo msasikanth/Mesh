@@ -35,6 +35,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.toHexStringNoHash
 import des.c5inco.mesh.data.AppState
+import model.SavedColor
+import model.toColor
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.foundation.theme.LocalContentColor
 import org.jetbrains.jewel.foundation.theme.LocalTextStyle
@@ -52,7 +54,7 @@ import org.jetbrains.jewel.ui.util.thenIf
 @Composable
 fun ColorDropdown(
     selectedColor: Int,
-    colors: List<Color>,
+    colors: List<SavedColor>,
     allowTransparency: Boolean = false,
     onSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -81,6 +83,7 @@ fun ColorDropdown(
                 }
             }
             colors.forEachIndexed { index, color ->
+                val c = color.toColor()
                 selectableItem(
                     selected = selectedColor == index,
                     onClick = {
@@ -91,9 +94,9 @@ fun ColorDropdown(
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        ColorSwatch(color = color)
+                        ColorSwatch(color = c)
                         Spacer(Modifier.width(8.dp))
-                        Text(color.toHexStringNoHash(false))
+                        Text(c.toHexStringNoHash(false))
                     }
                 }
             }
