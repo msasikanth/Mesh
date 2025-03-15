@@ -8,6 +8,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import model.MeshPoint
 import model.SavedColor
 import model.toSavedColor
 
@@ -53,6 +54,17 @@ class AppDataRepository {
     fun deleteColor(color: SavedColor) {
         scope.launch {
             database.savedColorDao().delete(color)
+        }
+    }
+
+    fun getMeshPoints(): Flow<List<MeshPoint>> {
+        return database.meshPointDao().getAll()
+    }
+
+    fun saveMeshPoints(points: List<MeshPoint>) {
+        scope.launch {
+            database.meshPointDao().deleteAll()
+            database.meshPointDao().insertAll(*points.toTypedArray())
         }
     }
 }

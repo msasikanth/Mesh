@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3f84f157fb1a81df0b908b744291ac7a",
+    "identityHash": "8ff8768a392e73b92cf53b11d5f8362d",
     "entities": [
       {
         "tableName": "SavedColor",
@@ -53,11 +53,59 @@
             "uid"
           ]
         }
+      },
+      {
+        "tableName": "MeshPoint",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `row` INTEGER NOT NULL, `col` INTEGER NOT NULL, `x` REAL NOT NULL, `y` REAL NOT NULL, `savedColorId` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "row",
+            "columnName": "row",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "col",
+            "columnName": "col",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "x",
+            "columnName": "x",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "y",
+            "columnName": "y",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedColorId",
+            "columnName": "savedColorId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3f84f157fb1a81df0b908b744291ac7a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8ff8768a392e73b92cf53b11d5f8362d')"
     ]
   }
 }
