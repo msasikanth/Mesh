@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.unit.dp
+import des.c5inco.mesh.data.AppConfiguration
 import des.c5inco.mesh.data.AppDataRepository
 import des.c5inco.mesh.data.AppState
 import des.c5inco.mesh.ui.GradientCanvas
@@ -23,10 +24,12 @@ import model.SavedColor
 
 @Composable
 fun App(
-    repository: AppDataRepository
+    repository: AppDataRepository,
+    configuration: AppConfiguration
 ) {
     val presetColors by repository.getPresetColors().collectAsState(initial = emptyList())
     val customColors by repository.getCustomColors().collectAsState(initial = emptyList())
+    val uiState by configuration.uiState.collectAsState()
 
     Row(
         Modifier.fillMaxSize()
@@ -39,6 +42,8 @@ fun App(
         GradientCanvas(
             exportGraphicsLayer = exportGraphicsLayer,
             exportScale = exportScale,
+            showPoints = uiState.showPoints,
+            onTogglePoints = { configuration.toggleShowingPoints() },
             onPointDrag = { selectedColorPoint = it },
             modifier = Modifier.weight(1f)
         )
@@ -46,6 +51,8 @@ fun App(
             exportScale = exportScale,
             presetColors = presetColors,
             customColors = customColors,
+            showPoints = uiState.showPoints,
+            onTogglePoints = { configuration.toggleShowingPoints() },
             onExportScaleChange = { exportScale = it },
             onExport = {
                 coroutineScope.launch {

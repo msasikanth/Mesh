@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import des.c5inco.mesh.data.AppConfiguration
 import des.c5inco.mesh.data.AppDataRepository
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.intui.standalone.theme.IntUiTheme
@@ -13,6 +14,7 @@ import org.jetbrains.jewel.ui.ComponentStyling
 
 fun main() = application {
     val appDataRepository = AppDataRepository()
+    val appConfiguration = AppConfiguration()
     val themeDefinition = JewelTheme.darkThemeDefinition()
 
     Window(
@@ -28,7 +30,8 @@ fun main() = application {
             styling = ComponentStyling.default()
         ) {
             App(
-                repository = appDataRepository
+                repository = appDataRepository,
+                configuration = appConfiguration
             )
         }
     }

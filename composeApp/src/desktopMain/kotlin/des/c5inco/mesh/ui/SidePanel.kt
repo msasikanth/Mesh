@@ -87,6 +87,8 @@ fun SidePanel(
     exportScale: Int,
     presetColors: List<SavedColor> = emptyList(),
     customColors: List<SavedColor> = emptyList(),
+    showPoints: Boolean,
+    onTogglePoints: () -> Unit = {},
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
     onAddColor: (Color) -> Unit = { _ -> },
@@ -249,8 +251,8 @@ fun SidePanel(
                 Spacer(Modifier.height(12.dp))
                 CheckboxRow(
                     text = "Show points",
-                    checked = AppState.showPoints,
-                    onCheckedChange = { AppState.showPoints = it },
+                    checked = showPoints,
+                    onCheckedChange = { onTogglePoints() },
                 )
                 CheckboxRow(
                     text = "Constrain edge points",

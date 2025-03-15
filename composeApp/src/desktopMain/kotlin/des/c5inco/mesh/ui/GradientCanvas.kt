@@ -56,10 +56,11 @@ import kotlin.math.roundToInt
 fun GradientCanvas(
     exportGraphicsLayer: GraphicsLayer,
     exportScale: Int,
+    showPoints: Boolean,
+    onTogglePoints: () -> Unit = {},
     onPointDrag: (Pair<Int, Int>?) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
-    val showPoints by remember { AppState::showPoints }
     val resolution by remember { AppState::resolution }
     val colors = remember { AppState.colorPoints }
 
@@ -109,7 +110,7 @@ fun GradientCanvas(
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onDoubleTap = {
-                            AppState.showPoints = !showPoints
+                            onTogglePoints()
                         }
                     )
                 }
