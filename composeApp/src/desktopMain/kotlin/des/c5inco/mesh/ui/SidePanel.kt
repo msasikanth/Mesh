@@ -55,6 +55,8 @@ import mesh.composeapp.generated.resources.distributeEvenly_dark
 import mesh.composeapp.generated.resources.featureCodeBlock_dark
 import mesh.composeapp.generated.resources.modeFilled_dark
 import mesh.composeapp.generated.resources.modeFixed_dark
+import model.SavedColor
+import model.toColor
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -81,9 +83,11 @@ import java.awt.datatransfer.StringSelection
 @Composable
 fun SidePanel(
     exportScale: Int,
+    savedColors: List<SavedColor> = emptyList(),
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
     onAddColor: (Color) -> Unit = { _ -> },
+    onRemoveColor: (SavedColor) -> Unit = { _ -> },
     selectedColorPoint: Pair<Int, Int>? = null,
     modifier: Modifier = Modifier
 ) {
@@ -140,6 +144,20 @@ fun SidePanel(
                         ColorSwatch(
                             color = color,
                             modifier = Modifier.clickable { AppState.removeColor(index) }
+                        )
+                    }
+                }
+                FlowRow(
+                    maxItemsInEachRow = 10,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    savedColors.forEach { savedColor ->
+                        ColorSwatch(
+                            color = savedColor.toColor(),
+                            modifier = Modifier.clickable {
+                                onRemoveColor(savedColor)
+                            }
                         )
                     }
                 }

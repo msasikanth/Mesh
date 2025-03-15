@@ -1,9 +1,6 @@
 package des.c5inco.mesh
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -23,14 +20,12 @@ import des.c5inco.mesh.ui.GradientCanvas
 import des.c5inco.mesh.ui.SidePanel
 import kotlinx.coroutines.launch
 import model.SavedColor
-import org.jetbrains.jewel.foundation.theme.JewelTheme
-import org.jetbrains.jewel.ui.component.Text
 
 @Composable
 fun App(
     repository: AppDataRepository
 ) {
-    val colors2 by repository.getColors().collectAsState(initial = emptyList())
+    val savedColors by repository.getColors().collectAsState(initial = emptyList())
 
     Row(
         Modifier.fillMaxSize()
@@ -40,16 +35,6 @@ fun App(
         val exportGraphicsLayer = rememberGraphicsLayer()
         val coroutineScope = rememberCoroutineScope()
 
-        Column(
-            Modifier
-                .background(JewelTheme.globalColors.panelBackground)
-                .fillMaxHeight()
-        ) {
-            colors2.forEach { color ->
-                Text(color.toString())
-            }
-        }
-
         GradientCanvas(
             exportGraphicsLayer = exportGraphicsLayer,
             exportScale = exportScale,
@@ -58,6 +43,7 @@ fun App(
         )
         SidePanel(
             exportScale = exportScale,
+            savedColors = savedColors,
             onExportScaleChange = { exportScale = it },
             onExport = {
                 coroutineScope.launch {
@@ -85,6 +71,7 @@ fun App(
                     )
                 )
             },
+            onRemoveColor = { repository.deleteColor(it) },
             selectedColorPoint = selectedColorPoint,
             modifier = Modifier.width(280.dp)
         )
