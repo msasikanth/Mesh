@@ -6,7 +6,10 @@ import data.AppRoomDatabase
 import java.io.File
 
 fun getDatabaseBuilder(): RoomDatabase.Builder<AppRoomDatabase> {
-    val dbFile = File(System.getProperty("user.home") + File.separator + ".mesh_room_db")
+    val dbFile = File(
+        System.getProperty("user.home") + File.separator +
+            ".mesh" + File.separator + "appDb"
+    )
     return Room.databaseBuilder<AppRoomDatabase>(
         name = dbFile.absolutePath,
     )
