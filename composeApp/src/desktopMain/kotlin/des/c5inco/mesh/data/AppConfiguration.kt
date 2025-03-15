@@ -28,6 +28,11 @@ data class AppUiState(
     val constrainEdgePoints: Boolean = true,
 )
 
+enum class DimensionMode {
+    Fixed,
+    Fill
+}
+
 private val defaultColorPoints = listOf(
     listOf(
         Offset(0f, 0f) to 1L,

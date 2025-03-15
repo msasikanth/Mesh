@@ -54,11 +54,6 @@ private val defaultColorPoints = listOf(
     )
 )
 
-enum class DimensionMode {
-    Fixed,
-    Fill
-}
-
 object AppState {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
