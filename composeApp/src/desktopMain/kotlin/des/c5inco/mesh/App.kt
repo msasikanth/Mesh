@@ -25,10 +25,10 @@ import model.SavedColor
 @Composable
 fun App(
     repository: AppDataRepository,
-    configuration: AppConfiguration
+    configuration: AppConfiguration,
+    presetColors: List<SavedColor>,
+    customColors: List<SavedColor>,
 ) {
-    val presetColors by repository.getPresetColors().collectAsState(initial = emptyList())
-    val customColors by repository.getCustomColors().collectAsState(initial = emptyList())
     val canvasBackgroundColor by configuration.canvasBackgroundColor.collectAsState()
     val uiState by configuration.uiState.collectAsState()
     val resolution by configuration.resolution.collectAsState()
@@ -77,6 +77,10 @@ fun App(
 
                     AppState.saveImage(image = awtImage, scale = exportScale)
                 }
+            },
+            onExportCode = {
+                configuration.exportPointsAsCode()
+                AppState.sendNotification("📋 Points copied to the clipboard!")
             },
             onCanvasBackgroundColorChange = configuration::updateCanvasBackgroundColor,
             onAddColor = {

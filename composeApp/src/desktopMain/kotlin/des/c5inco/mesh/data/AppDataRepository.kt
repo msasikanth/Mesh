@@ -39,6 +39,10 @@ class AppDataRepository {
         }
     }
 
+    fun getAllColors(): Flow<List<SavedColor>> {
+        return database.savedColorDao().getAll()
+    }
+
     fun getPresetColors(): Flow<List<SavedColor>> {
         return database.savedColorDao().getAllPresets()
     }

@@ -1,5 +1,7 @@
 package des.c5inco.mesh
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -14,7 +16,12 @@ import org.jetbrains.jewel.ui.ComponentStyling
 
 fun main() = application {
     val appDataRepository = AppDataRepository()
-    val appConfiguration = AppConfiguration()
+    val presetColors by appDataRepository.getPresetColors().collectAsState(initial = emptyList())
+    val customColors by appDataRepository.getCustomColors().collectAsState(initial = emptyList())
+
+    val configuration = AppConfiguration(
+        availableColors = presetColors + customColors,
+    )
     val themeDefinition = JewelTheme.darkThemeDefinition()
 
     Window(
@@ -31,7 +38,9 @@ fun main() = application {
         ) {
             App(
                 repository = appDataRepository,
-                configuration = appConfiguration
+                configuration = configuration,
+                presetColors = presetColors,
+                customColors = customColors,
             )
         }
     }

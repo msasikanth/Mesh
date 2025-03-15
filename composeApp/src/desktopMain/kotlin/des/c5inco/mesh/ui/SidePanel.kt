@@ -78,8 +78,6 @@ import org.jetbrains.jewel.ui.component.Typography
 import org.jetbrains.jewel.ui.component.VerticallyScrollableContainer
 import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import org.jetbrains.jewel.ui.theme.colorPalette
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
@@ -96,6 +94,7 @@ fun SidePanel(
     onToggleConstrainingEdgePoints: () -> Unit = {},
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
+    onExportCode: () -> Unit = {},
     onCanvasBackgroundColorChange: (Long) -> Unit = { _ -> },
     onAddColor: (Color) -> Unit = { _ -> },
     onRemoveColor: (SavedColor) -> Unit = { _ -> },
@@ -204,13 +203,8 @@ fun SidePanel(
                     actions = {
                         Tooltip(tooltip = { Text("Export points as code") }) {
                             IconButton(onClick = {
-                                val export = AppState.exportPointsAsCode()
-                                val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-                                clipboard.setContents(StringSelection(export), null)
-                                println(export)
+                                onExportCode()
                                 focusManager.clearFocus()
-
-                                AppState.sendNotification("📋 Points copied to the clipboard!")
                             }) {
                                 Icon(
                                     painter = painterResource(resource = Res.drawable.featureCodeBlock_dark),
