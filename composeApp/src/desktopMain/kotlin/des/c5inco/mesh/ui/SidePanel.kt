@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
@@ -41,6 +42,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import des.c5inco.mesh.common.toColor
 import des.c5inco.mesh.common.toHexStringNoHash
 import des.c5inco.mesh.data.AppState
@@ -83,7 +85,8 @@ import java.awt.datatransfer.StringSelection
 @Composable
 fun SidePanel(
     exportScale: Int,
-    savedColors: List<SavedColor> = emptyList(),
+    presetColors: List<SavedColor> = emptyList(),
+    customColors: List<SavedColor> = emptyList(),
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
     onAddColor: (Color) -> Unit = { _ -> },
@@ -100,59 +103,60 @@ fun SidePanel(
     ) {
         Column {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(16.dp),
             ) {
                 var showColorInput by remember { mutableStateOf(false) }
 
-                SectionHeader(
-                    title = "Colors",
-                    actions = {
-                        Tooltip(tooltip = { Text("Add color") }) {
-                            IconButton(
-                                onClick = {
-                                    focusManager.clearFocus()
-                                    showColorInput = true
-                                }
-                            ) {
-                                Icon(
-                                    key = AllIconsKeys.General.Add,
-                                    iconClass = AllIconsKeys::class.java,
-                                    contentDescription = "Add color"
-                                )
-                            }
-                        }
-                    }
-                )
+                SectionHeader(title = "Colors")
 
+                Spacer(Modifier.height(12.dp))
+                Text("Presets", fontSize = 12.sp, color = JewelTheme.globalColors.text.info)
+                FlowRow(
+                    maxItemsInEachRow = 10,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    presetColors.forEach { presetSavedColor ->
+                        ColorSwatch(color = presetSavedColor.toColor())
+                    }
+                }
+
+                Spacer(Modifier.height(12.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Custom", fontSize = 12.sp, color = JewelTheme.globalColors.text.info)
+                    Spacer(Modifier.width(8.dp))
+                    IconButton(
+                        onClick = { showColorInput = true },
+                        modifier = Modifier.size(14.dp)
+                    ) {
+                        Icon(
+                            key = AllIconsKeys.General.InlineAdd,
+                            iconClass = AllIconsKeys::class.java,
+                            contentDescription = "Add color"
+                        )
+                    }
+                }
                 if (showColorInput) {
                     ColorInput(
                         onCancel = { showColorInput = false },
                         onSubmit = {
                             showColorInput = false
-                            AppState.colors.add(it)
                             onAddColor(it)
-                        }
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+                } else {
+                    Spacer(Modifier.height(8.dp))
                 }
                 FlowRow(
                     maxItemsInEachRow = 10,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    AppState.colors.forEachIndexed { index, color ->
-                        ColorSwatch(
-                            color = color,
-                            modifier = Modifier.clickable { AppState.removeColor(index) }
-                        )
-                    }
-                }
-                FlowRow(
-                    maxItemsInEachRow = 10,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    savedColors.forEach { savedColor ->
+                    customColors.forEach { savedColor ->
                         ColorSwatch(
                             color = savedColor.toColor(),
                             modifier = Modifier.clickable {

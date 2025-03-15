@@ -25,7 +25,8 @@ import model.SavedColor
 fun App(
     repository: AppDataRepository
 ) {
-    val savedColors by repository.getColors().collectAsState(initial = emptyList())
+    val presetColors by repository.getPresetColors().collectAsState(initial = emptyList())
+    val customColors by repository.getCustomColors().collectAsState(initial = emptyList())
 
     Row(
         Modifier.fillMaxSize()
@@ -43,7 +44,8 @@ fun App(
         )
         SidePanel(
             exportScale = exportScale,
-            savedColors = savedColors,
+            presetColors = presetColors,
+            customColors = customColors,
             onExportScaleChange = { exportScale = it },
             onExport = {
                 coroutineScope.launch {
@@ -54,14 +56,6 @@ fun App(
                 }
             },
             onAddColor = {
-                //data.addColor(
-                //    DbColor(
-                //        red = (255 * it.red).toInt(),
-                //        green = (255 * it.green).toInt(),
-                //        blue = (255 * it.blue).toInt(),
-                //        alpha = it.alpha
-                //    )
-                //)
                 repository.addColor(
                     SavedColor(
                         red = (255 * it.red).toInt(),

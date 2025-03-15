@@ -15,7 +15,7 @@ class AppDataRepository {
     private val database = getRoomDatabase(getDatabaseBuilder())
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val defaultColors = listOf(
+    private val defaultPresetColors = listOf(
         Color(0xff7766EE),
         Color(0xff8899ff),
         Color(0xff429BED),
@@ -27,17 +27,21 @@ class AppDataRepository {
 
     init {
         scope.launch {
-            val savedColors = database.savedColorDao().getAll().first()
-            if (savedColors.isEmpty()) {
+            val allColors = database.savedColorDao().getAll().first()
+            if (allColors.isEmpty()) {
                 database.savedColorDao().insertAll(
-                    *defaultColors.map { it.toSavedColor() }.toTypedArray()
+                    *defaultPresetColors.map { it.toSavedColor(true) }.toTypedArray()
                 )
             }
         }
     }
 
-    fun getColors(): Flow<List<SavedColor>> {
-        return database.savedColorDao().getAll()
+    fun getPresetColors(): Flow<List<SavedColor>> {
+        return database.savedColorDao().getAllPresets()
+    }
+
+    fun getCustomColors(): Flow<List<SavedColor>> {
+        return database.savedColorDao().getAllCustom()
     }
 
     fun addColor(color: SavedColor) {

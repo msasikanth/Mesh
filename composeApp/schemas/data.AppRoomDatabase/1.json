@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "01dae16d67504452b250cfabb63c0deb",
+    "identityHash": "3f84f157fb1a81df0b908b744291ac7a",
     "entities": [
       {
         "tableName": "SavedColor",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `red` INTEGER NOT NULL, `green` INTEGER NOT NULL, `blue` INTEGER NOT NULL, `alpha` REAL NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `red` INTEGER NOT NULL, `green` INTEGER NOT NULL, `blue` INTEGER NOT NULL, `alpha` REAL NOT NULL DEFAULT 1, `preset` INTEGER NOT NULL DEFAULT false)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -36,7 +36,15 @@
             "fieldPath": "alpha",
             "columnName": "alpha",
             "affinity": "REAL",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "preset",
+            "columnName": "preset",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
           }
         ],
         "primaryKey": {
@@ -49,7 +57,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '01dae16d67504452b250cfabb63c0deb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3f84f157fb1a81df0b908b744291ac7a')"
     ]
   }
 }
