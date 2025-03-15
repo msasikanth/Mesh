@@ -89,7 +89,10 @@ fun App(
                     )
                 )
             },
-            onRemoveColor = { repository.deleteColor(it) },
+            onRemoveColor = {
+                configuration.removeColorFromMeshPoints(it.uid)
+                repository.deleteColor(it)
+            },
             selectedColorPoint = selectedColorPoint,
             modifier = Modifier.width(280.dp)
         )

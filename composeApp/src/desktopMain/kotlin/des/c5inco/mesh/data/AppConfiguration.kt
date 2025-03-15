@@ -90,6 +90,20 @@ class AppConfiguration(
         meshPoints.set(index = row, element = colorPointsInRow.toList())
     }
 
+    fun removeColorFromMeshPoints(colorToRemove: Long) {
+        meshPoints.forEachIndexed { idx, points ->
+            val newPoints = points.map { point ->
+                if (point.second == colorToRemove) {
+                    // Reset to transparent
+                    Pair(point.first, -1L)
+                } else {
+                    point
+                }
+            }
+            meshPoints.set(index = idx, element = newPoints.toList())
+        }
+    }
+
     fun toggleShowingPoints() {
         uiState.update {
             it.copy(showPoints = !it.showPoints)
