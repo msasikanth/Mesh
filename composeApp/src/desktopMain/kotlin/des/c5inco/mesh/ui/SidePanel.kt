@@ -86,9 +86,13 @@ fun SidePanel(
     presetColors: List<SavedColor> = emptyList(),
     customColors: List<SavedColor> = emptyList(),
     canvasBackgroundColor: Long,
+    totalRows: Int,
+    totalCols: Int,
     meshPoints: List<List<Pair<Offset, Long>>> = emptyList(),
     showPoints: Boolean,
     constrainEdgePoints: Boolean,
+    onUpdateTotalRows: (Int) -> Unit = {},
+    onUpdateTotalCols: (Int) -> Unit = {},
     onUpdateMeshPoint: (row: Int, col: Int, point: Pair<Offset, Long>) -> Unit,
     onTogglePoints: () -> Unit = {},
     onToggleConstrainingEdgePoints: () -> Unit = {},
@@ -232,22 +236,22 @@ fun SidePanel(
                 Spacer(Modifier.height(12.dp))
                 Row {
                     DimensionInputField(
-                        value = AppState.colorPointsRows,
+                        value = totalRows,
                         enabled = true,
                         paramName = "Rows",
                         min = 2,
                         max = 10,
-                        onUpdate = { AppState.updatePointsRows(it.coerceIn(2, 10)) },
+                        onUpdate = onUpdateTotalRows,
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(8.dp))
                     DimensionInputField(
-                        value = AppState.colorPointsCols,
+                        value = totalCols,
                         enabled = true,
                         paramName = "Cols",
                         min = 2,
                         max = 10,
-                        onUpdate = { AppState.updatePointsCols(it.coerceIn(2, 10)) },
+                        onUpdate = onUpdateTotalCols,
                         modifier = Modifier.weight(1f)
                     )
                 }

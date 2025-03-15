@@ -32,6 +32,8 @@ fun App(
     val canvasBackgroundColor by configuration.canvasBackgroundColor.collectAsState()
     val uiState by configuration.uiState.collectAsState()
     val resolution by configuration.resolution.collectAsState()
+    val totalRows by configuration.totalRows.collectAsState()
+    val totalCols by configuration.totalCols.collectAsState()
 
     Row(
         Modifier.fillMaxSize()
@@ -61,9 +63,13 @@ fun App(
             presetColors = presetColors,
             customColors = customColors,
             canvasBackgroundColor = canvasBackgroundColor,
+            totalRows = totalRows,
+            totalCols = totalCols,
             meshPoints = configuration.meshPoints,
             showPoints = uiState.showPoints,
             constrainEdgePoints = uiState.constrainEdgePoints,
+            onUpdateTotalRows = configuration::updateTotalRows,
+            onUpdateTotalCols = configuration::updateTotalCols,
             onUpdateMeshPoint = { row, col, point ->
                 configuration.updateMeshPoint(row, col, point)
             },
