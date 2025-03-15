@@ -19,6 +19,9 @@ import model.findColor
 import model.toOffsetGrid
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 
 data class AppUiState(
     val showPoints: Boolean = false,
@@ -60,6 +63,22 @@ class AppConfiguration(
 
     companion object {
         const val MAX_BLUR_LEVEL = 40
+
+        fun saveImage(image: BufferedImage, scale: Int) {
+            try {
+                val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
+                val scaleSuffix = if (scale == 1) "" else "@${scale}x"
+                val filename = "mesh-export$scaleSuffix.png"
+                val file = File(desktopPath, filename) // You can change the filename and extension
+
+                ImageIO.write(image, "png", file)
+                Notifications.send("🖼 Exported $filename to ${file.absolutePath.substringBeforeLast("/")}")
+                println("Image saved to: ${file.absolutePath}")
+            } catch (e: Exception) {
+                println("Error saving image: ${e.message}")
+                e.printStackTrace()
+            }
+        }
     }
 
     var canvasBackgroundColor = MutableStateFlow(-1L)

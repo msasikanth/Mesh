@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.data.AppConfiguration
 import des.c5inco.mesh.data.AppDataRepository
-import des.c5inco.mesh.data.AppState
+import des.c5inco.mesh.data.Notifications
 import des.c5inco.mesh.ui.GradientCanvas
 import des.c5inco.mesh.ui.SidePanel
 import kotlinx.coroutines.launch
@@ -86,12 +86,12 @@ fun App(
                     val bitmap = exportGraphicsLayer.toImageBitmap()
                     val awtImage = bitmap.toAwtImage()
 
-                    AppState.saveImage(image = awtImage, scale = exportScale)
+                    AppConfiguration.saveImage(image = awtImage, scale = exportScale)
                 }
             },
             onExportCode = {
                 configuration.exportMeshPointsAsCode()
-                AppState.sendNotification("📋 Points copied to the clipboard!")
+                Notifications.send("📋 Points copied to the clipboard!")
             },
             onCanvasBackgroundColorChange = configuration::updateCanvasBackgroundColor,
             onAddColor = {

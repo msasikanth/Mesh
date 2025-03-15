@@ -42,6 +42,7 @@ import des.c5inco.mesh.common.meshGradient
 import des.c5inco.mesh.data.AppConfiguration.Companion.MAX_BLUR_LEVEL
 import des.c5inco.mesh.data.AppState
 import des.c5inco.mesh.data.DimensionMode
+import des.c5inco.mesh.data.Notifications
 import des.c5inco.mesh.ui.components.CanvasSnackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -86,7 +87,7 @@ fun GradientCanvas(
 
     LaunchedEffect(Unit) {
         launch(Dispatchers.Main) {
-            AppState.notificationFlow.collectLatest {
+            Notifications.notificationFlow.collectLatest {
                 notifications.add(0, it)
             }
         }
