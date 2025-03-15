@@ -52,7 +52,7 @@ class AppConfiguration(
     val availableColors: List<SavedColor>,
     incomingMeshPoints: List<MeshPoint> = emptyList(),
     showPoints: Boolean = false,
-    val constrainEdgePoints: Boolean = true,
+    private var constrainEdgePoints: Boolean = true,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -165,8 +165,9 @@ class AppConfiguration(
     }
 
     fun toggleConstrainingEdgePoints() {
+        constrainEdgePoints = !constrainEdgePoints
         uiState.update {
-            it.copy(constrainEdgePoints = !it.constrainEdgePoints)
+            it.copy(constrainEdgePoints = constrainEdgePoints)
         }
     }
 }

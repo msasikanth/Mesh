@@ -270,7 +270,7 @@ fun SidePanel(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
-                meshPoints.forEachIndexed { rowIdx, colorPoints ->
+                meshPoints.forEachIndexed { rowIdx, rowPoints ->
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
@@ -278,15 +278,15 @@ fun SidePanel(
                             text = "Row ${rowIdx + 1}",
                             fontWeight = FontWeight.SemiBold
                         )
-                        colorPoints.forEachIndexed { colIdx, point ->
+                        rowPoints.forEachIndexed { colIdx, point ->
                             Box(
                                 contentAlignment = Alignment.CenterStart,
                             ) {
                                 ColorPointRow(
                                     x = point.first.x,
                                     y = point.first.y,
-                                    constrainX = AppState.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
-                                    constrainY = AppState.constrainEdgePoints && (rowIdx == 0 || rowIdx == AppState.colorPoints.size - 1),
+                                    constrainX = constrainEdgePoints && (colIdx == 0 || colIdx == rowPoints.size - 1),
+                                    constrainY = constrainEdgePoints && (rowIdx == 0 || rowIdx == meshPoints.size - 1),
                                     colorId = point.second,
                                     availableColors = presetColors + customColors,
                                     onUpdatePoint = { (nextOffset, nextColor) ->
