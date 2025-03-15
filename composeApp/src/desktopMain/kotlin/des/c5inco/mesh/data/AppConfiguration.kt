@@ -8,6 +8,8 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.asClassName
 import des.c5inco.mesh.common.toHexStringNoHash
+import des.c5inco.mesh.data.AppState.colorPointsCols
+import des.c5inco.mesh.data.AppState.colorPointsRows
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -50,6 +52,8 @@ class AppConfiguration(
     resolution: Int = 10,
     blurLevel: Float = 0f,
     val availableColors: List<SavedColor>,
+    var totalRows: Int = 3,
+    var totalCols: Int = 4,
     incomingMeshPoints: List<MeshPoint> = emptyList(),
     showPoints: Boolean = false,
     private var constrainEdgePoints: Boolean = true,
@@ -101,6 +105,29 @@ class AppConfiguration(
         meshPoints.set(index = row, element = colorPointsInRow.toList())
     }
 
+    fun distributeMeshPointsEvenly() {
+        val newPoints = meshPoints.mapIndexed { rowIdx, currentPoints ->
+            val newPoints = mutableListOf<Pair<Offset, Long>>()
+
+            // Calculate the Y position for this row
+            val yPosition = rowIdx.toFloat() / (totalRows - 1)
+
+            // Iterate through columns to create points
+            repeat(totalCols) { colIdx ->
+                // Calculate the X position for this column
+                val xPosition = colIdx.toFloat() / (totalCols - 1)
+
+                newPoints.add(
+                    Pair(Offset(xPosition, yPosition), currentPoints[colIdx].second)
+                )
+            }
+
+            newPoints.toList()
+        }
+        meshPoints.clear()
+        meshPoints.addAll(newPoints)
+    }
+
     fun removeColorFromMeshPoints(colorToRemove: Long) {
         meshPoints.forEachIndexed { idx, points ->
             val newPoints = points.map { point ->
@@ -115,7 +142,7 @@ class AppConfiguration(
         }
     }
 
-    fun exportPointsAsCode() {
+    fun exportMeshPointsAsCode() {
         if (meshPoints.isEmpty()) return
 
         val offsetType = Offset::class.asClassName()

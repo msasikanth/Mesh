@@ -92,6 +92,7 @@ fun SidePanel(
     onUpdateMeshPoint: (row: Int, col: Int, point: Pair<Offset, Long>) -> Unit,
     onTogglePoints: () -> Unit = {},
     onToggleConstrainingEdgePoints: () -> Unit = {},
+    onDistributeMeshPointsEvenly: () -> Unit = {},
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
     onExportCode: () -> Unit = {},
@@ -216,7 +217,7 @@ fun SidePanel(
                         Tooltip(tooltip = { Text("Distribute points evenly") }) {
                             IconButton(
                                 onClick = {
-                                    AppState.distributeOffsetsEvenly()
+                                    onDistributeMeshPointsEvenly()
                                     focusManager.clearFocus()
                                 }
                             ) {

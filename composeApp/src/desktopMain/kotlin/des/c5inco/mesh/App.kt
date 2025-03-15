@@ -69,6 +69,7 @@ fun App(
             },
             onTogglePoints = { configuration.toggleShowingPoints() },
             onToggleConstrainingEdgePoints = { configuration.toggleConstrainingEdgePoints() },
+            onDistributeMeshPointsEvenly = configuration::distributeMeshPointsEvenly,
             onExportScaleChange = { exportScale = it },
             onExport = {
                 coroutineScope.launch {
@@ -79,7 +80,7 @@ fun App(
                 }
             },
             onExportCode = {
-                configuration.exportPointsAsCode()
+                configuration.exportMeshPointsAsCode()
                 AppState.sendNotification("📋 Points copied to the clipboard!")
             },
             onCanvasBackgroundColorChange = configuration::updateCanvasBackgroundColor,
