@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.data.AppConfiguration
-import des.c5inco.mesh.data.AppDataRepository
 import des.c5inco.mesh.data.Notifications
 import des.c5inco.mesh.ui.GradientCanvas
 import des.c5inco.mesh.ui.SidePanel
@@ -24,11 +23,11 @@ import model.SavedColor
 
 @Composable
 fun App(
-    repository: AppDataRepository,
     configuration: AppConfiguration,
-    presetColors: List<SavedColor>,
-    customColors: List<SavedColor>,
 ) {
+    val presetColors by configuration.presetColors.collectAsState(initial = emptyList())
+    val customColors by configuration.customColors.collectAsState(initial = emptyList())
+    val availableColors by configuration.availableColors.collectAsState()
     val canvasBackgroundColor by configuration.canvasBackgroundColor.collectAsState()
     val uiState by configuration.uiState.collectAsState()
     val resolution by configuration.resolution.collectAsState()
@@ -49,7 +48,7 @@ fun App(
             exportScale = exportScale,
             resolution = resolution,
             blurLevel = blurLevel,
-            availableColors = presetColors + customColors,
+            availableColors = availableColors,
             canvasBackgroundColor = canvasBackgroundColor,
             meshPoints = configuration.meshPoints,
             showPoints = uiState.showPoints,
@@ -95,7 +94,7 @@ fun App(
             },
             onCanvasBackgroundColorChange = configuration::updateCanvasBackgroundColor,
             onAddColor = {
-                repository.addColor(
+                configuration.addColor(
                     SavedColor(
                         red = (255 * it.red).toInt(),
                         green = (255 * it.green).toInt(),
@@ -106,7 +105,7 @@ fun App(
             },
             onRemoveColor = {
                 configuration.removeColorFromMeshPoints(it.uid)
-                repository.deleteColor(it)
+                configuration.deleteColor(it)
             },
             selectedColorPoint = selectedColorPoint,
             modifier = Modifier.width(280.dp)

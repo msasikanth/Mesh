@@ -12,7 +12,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import model.MeshPoint
 import model.SavedColor
 import model.findColor
@@ -55,9 +60,11 @@ private val defaultColorPoints = listOf(
 )
 
 class AppConfiguration(
+    private val repository: AppDataRepository,
+    canvasWidthMode: DimensionMode = DimensionMode.Fill,
+    canvasHeightMode: DimensionMode = DimensionMode.Fill,
     resolution: Int = 10,
     blurLevel: Float = 0f,
-    val availableColors: List<SavedColor>,
     totalRows: Int = 3,
     totalCols: Int = 4,
     incomingMeshPoints: List<MeshPoint> = emptyList(),
@@ -86,10 +93,22 @@ class AppConfiguration(
         }
     }
 
+    val presetColors = repository.getPresetColors()
+    val customColors = repository.getCustomColors()
+
+    val availableColors = combine(
+        presetColors,
+        customColors
+    ) { preset, custom ->
+        preset + custom
+    }.stateIn(scope, SharingStarted.Lazily, emptyList())
+
     var canvasBackgroundColor = MutableStateFlow(-1L)
+    val canvasWidthMode = MutableStateFlow(DimensionMode.Fill)
+    val canvasHeightMode = MutableStateFlow(DimensionMode.Fill)
     var resolution = MutableStateFlow(resolution)
     var blurLevel = MutableStateFlow(blurLevel)
-    var totalRows = MutableStateFlow(totalRows)
+    val totalRows = MutableStateFlow(totalRows)
     var totalCols = MutableStateFlow(totalCols)
     var meshPoints = if (incomingMeshPoints.isEmpty()) {
         defaultColorPoints
@@ -103,6 +122,14 @@ class AppConfiguration(
             constrainEdgePoints = constrainEdgePoints,
         )
     )
+
+    fun addColor(color: SavedColor) {
+        repository.addColor(color)
+    }
+
+    fun deleteColor(color: SavedColor) {
+        repository.deleteColor(color)
+    }
 
     fun updateBlurLevel(level: Float) {
         blurLevel.update { level }
@@ -124,26 +151,30 @@ class AppConfiguration(
 
     private fun generateMeshPoints() {
         meshPoints.clear()
+        scope.launch {
+            val availableColorsAsList = availableColors.first()
 
-        repeat(totalRows.value) { rowIdx ->
-            val newColorIndex = availableColors[rowIdx % availableColors.size].uid
+            repeat(totalRows.value) { rowIdx ->
+                val newColorIndex =
+                    availableColorsAsList[rowIdx % availableColorsAsList.size].uid
 
-            val newPoints = mutableListOf<Pair<Offset, Long>>()
+                val newPoints = mutableListOf<Pair<Offset, Long>>()
 
-            // Calculate the Y position for this row
-            val yPosition = rowIdx.toFloat() / (totalRows.value - 1)
+                // Calculate the Y position for this row
+                val yPosition = rowIdx.toFloat() / (totalRows.value - 1)
 
-            // Iterate through columns to create points
-            repeat(totalCols.value) { colIdx ->
-                // Calculate the X position for this column
-                val xPosition = colIdx.toFloat() / (totalCols.value - 1)
+                // Iterate through columns to create points
+                repeat(totalCols.value) { colIdx ->
+                    // Calculate the X position for this column
+                    val xPosition = colIdx.toFloat() / (totalCols.value - 1)
 
-                newPoints.add(
-                    Pair(Offset(xPosition, yPosition), newColorIndex)
-                )
+                    newPoints.add(
+                        Pair(Offset(xPosition, yPosition), newColorIndex)
+                    )
+                }
+
+                meshPoints.add(newPoints.toList())
             }
-
-            meshPoints.add(newPoints.toList())
         }
     }
 
@@ -210,46 +241,49 @@ class AppConfiguration(
     }
 
     fun exportMeshPointsAsCode() {
-        if (meshPoints.isEmpty()) return
+        scope.launch {
+            val availableColorsAsList = availableColors.first()
 
-        val offsetType = Offset::class.asClassName()
-        val colorType = Color::class.asClassName()
-        val pairType = Pair::class.asClassName().parameterizedBy(offsetType, colorType)
-        val innerListType = List::class.asClassName().parameterizedBy(pairType)
-        val outerListType = List::class.asClassName().parameterizedBy(innerListType)
+            val offsetType = Offset::class.asClassName()
+            val colorType = Color::class.asClassName()
+            val pairType = Pair::class.asClassName().parameterizedBy(offsetType, colorType)
+            val innerListType = List::class.asClassName().parameterizedBy(pairType)
+            val outerListType = List::class.asClassName().parameterizedBy(innerListType)
 
-        val listInitializer = CodeBlock.builder()
-            .add("listOf(\n")
-            .indent()
+            val listInitializer = CodeBlock.builder()
+                .add("listOf(\n")
+                .indent()
 
-        meshPoints.forEachIndexed { _, innerList ->
-            listInitializer.add("listOf(\n")
-            listInitializer.indent()
+            meshPoints.forEachIndexed { _, innerList ->
+                listInitializer.add("listOf(\n")
+                listInitializer.indent()
 
-            innerList.forEachIndexed { _, pair ->
-                val hexString = availableColors.findColor(pair.second).toHexStringNoHash(includeAlpha = true)
-                listInitializer.add(
-                    "Offset(%Lf, %Lf) to Color(0x%L),\n",
-                    pair.first.x,
-                    pair.first.y,
-                    hexString
-                )
+                innerList.forEachIndexed { _, pair ->
+                    val hexString = availableColorsAsList.findColor(pair.second)
+                        .toHexStringNoHash(includeAlpha = true)
+                    listInitializer.add(
+                        "Offset(%Lf, %Lf) to Color(0x%L),\n",
+                        pair.first.x,
+                        pair.first.y,
+                        hexString
+                    )
+                }
+
+                listInitializer.unindent()
+                listInitializer.add("),\n")
             }
 
             listInitializer.unindent()
-            listInitializer.add("),\n")
+            listInitializer.add(")")
+
+            val codeSpec = PropertySpec.builder("colorPoints", outerListType)
+                .initializer(listInitializer.build())
+                .build()
+
+            val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+            clipboard.setContents(StringSelection(codeSpec.toString()), null)
+            println(codeSpec.toString())
         }
-
-        listInitializer.unindent()
-        listInitializer.add(")")
-
-        val codeSpec = PropertySpec.builder("colorPoints", outerListType)
-            .initializer(listInitializer.build())
-            .build()
-
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        clipboard.setContents(StringSelection(codeSpec.toString()), null)
-        println(codeSpec.toString())
     }
 
     fun toggleShowingPoints() {
