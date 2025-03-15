@@ -46,6 +46,8 @@ import des.c5inco.mesh.ui.components.CanvasSnackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import model.SavedColor
+import model.findColor
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.theme.colorPalette
@@ -56,12 +58,15 @@ import kotlin.math.roundToInt
 fun GradientCanvas(
     exportGraphicsLayer: GraphicsLayer,
     exportScale: Int,
+    resolution: Int,
+    meshPoints: List<List<Pair<Offset, Long>>>,
     showPoints: Boolean,
+    availableColors: List<SavedColor>,
     onTogglePoints: () -> Unit = {},
-    onPointDrag: (Pair<Int, Int>?) -> Unit = { _ -> },
+    onPointDragStartEnd: (Pair<Int, Int>?) -> Unit = { _ -> },
+    onPointDrag: (row: Int, col: Int, point: Pair<Offset, Long>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val resolution by remember { AppState::resolution }
     val colors = remember { AppState.colorPoints }
 
     val canvasWidthMode by AppState.canvasWidthMode.collectAsState()
@@ -134,17 +139,18 @@ fun GradientCanvas(
             val maxHeight = constraints.maxHeight
 
             fun handlePointDrag(coordinate: Pair<Int, Int>, offsetX: Float, offsetY: Float) {
-                val colorPoints = colors[coordinate.second]
+                val colorPoints = meshPoints[coordinate.second]
                 val currentPoint = colorPoints[coordinate.first]
                 val currentOffset = currentPoint.first
 
                 val x = (currentOffset.x + (offsetX / maxWidth)).coerceIn(0f, 1f)
                 val y = (currentOffset.y + (offsetY / maxHeight)).coerceIn(0f, 1f)
 
-                AppState.updateColorPoint(
-                    col = coordinate.first,
-                    row = coordinate.second,
-                    point = Pair(Offset(x = x, y = y), currentPoint.second)
+                println("$x, $y")
+                onPointDrag(
+                    coordinate.second,
+                    coordinate.first,
+                    Pair(Offset(x = x, y = y), currentPoint.second)
                 )
             }
 
@@ -201,9 +207,9 @@ fun GradientCanvas(
                         drawLayer(graphicsLayer)
                     }
                     .meshGradient(
-                        points = colors.map { row ->
+                        points = meshPoints.map { row ->
                             row.map {
-                                it.first to AppState.getColor(it.second)
+                                it.first to availableColors.findColor(it.second)
                             }
                         },
                         blurLevel = (AppState.blurLevel * MAX_BLUR_LEVEL).roundToInt(),
@@ -217,19 +223,19 @@ fun GradientCanvas(
             Layout(
                 content = {
                     if (showPoints) {
-                        colors.forEachIndexed { rowIdx, row ->
+                        meshPoints.forEachIndexed { rowIdx, row ->
                             row.forEachIndexed { colIdx, col ->
                                 PointCursor(
                                     xIndex = colIdx,
                                     yIndex = rowIdx,
-                                    color = AppState.getColor(col.second),
+                                    color = availableColors.findColor(col.second),
                                     modifier = Modifier.pointerInput(Unit) {
                                         detectDragGestures(
                                             onDragStart = {
-                                                onPointDrag(Pair(rowIdx, colIdx))
+                                                onPointDragStartEnd(Pair(rowIdx, colIdx))
                                             },
                                             onDragEnd = {
-                                                onPointDrag(null)
+                                                onPointDragStartEnd(null)
                                             }
                                         ) { change, dragAmount ->
                                             change.consume()
@@ -253,15 +259,15 @@ fun GradientCanvas(
                         if (placeables.isNotEmpty()) {
                             val cursorWidth = placeables[0].width
                             val cursorHeight = placeables[0].height
-                            val rows = colors.size
-                            val cols = colors[0].size
+                            val rows = meshPoints.size
+                            val cols = meshPoints[0].size
 
                             placeables.forEachIndexed { i, placeable ->
                                 val row = i / cols
                                 val col = i % cols
 
-                                val xOffset = colors[row][col].first.x
-                                val yOffset = colors[row][col].first.y
+                                val xOffset = meshPoints[row][col].first.x
+                                val yOffset = meshPoints[row][col].first.y
 
                                 val x =
                                     ((xOffset * (constraints.maxWidth)) - cursorWidth / 2).toInt()

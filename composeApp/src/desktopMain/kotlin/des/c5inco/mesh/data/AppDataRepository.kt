@@ -12,26 +12,28 @@ import model.MeshPoint
 import model.SavedColor
 import model.toSavedColor
 
+val defaultPresetColors = listOf(
+    Color(0xff7766EE),
+    Color(0xff8899ff),
+    Color(0xff429BED),
+    Color(0xff4FC1A6),
+    Color(0xffF0C03E),
+    Color(0xffff5599),
+    Color(0xFFFF00FF),
+)
+
 class AppDataRepository {
     private val database = getRoomDatabase(getDatabaseBuilder())
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    private val defaultPresetColors = listOf(
-        Color(0xff7766EE),
-        Color(0xff8899ff),
-        Color(0xff429BED),
-        Color(0xff4FC1A6),
-        Color(0xffF0C03E),
-        Color(0xffff5599),
-        Color(0xFFFF00FF),
-    )
 
     init {
         scope.launch {
             val allColors = database.savedColorDao().getAll().first()
             if (allColors.isEmpty()) {
                 database.savedColorDao().insertAll(
-                    *defaultPresetColors.map { it.toSavedColor(true) }.toTypedArray()
+                    *defaultPresetColors.mapIndexed { index, color ->
+                        color.toSavedColor(preset = true)
+                    }.toTypedArray()
                 )
             }
         }

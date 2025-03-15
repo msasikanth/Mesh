@@ -87,10 +87,16 @@ fun SidePanel(
     exportScale: Int,
     presetColors: List<SavedColor> = emptyList(),
     customColors: List<SavedColor> = emptyList(),
+    canvasBackgroundColor: Long,
+    meshPoints: List<List<Pair<Offset, Long>>> = emptyList(),
     showPoints: Boolean,
+    constrainEdgePoints: Boolean,
+    onUpdateMeshPoint: (row: Int, col: Int, point: Pair<Offset, Long>) -> Unit,
     onTogglePoints: () -> Unit = {},
+    onToggleConstrainingEdgePoints: () -> Unit = {},
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
+    onCanvasBackgroundColorChange: (Long) -> Unit = { _ -> },
     onAddColor: (Color) -> Unit = { _ -> },
     onRemoveColor: (SavedColor) -> Unit = { _ -> },
     selectedColorPoint: Pair<Int, Int>? = null,
@@ -177,9 +183,11 @@ fun SidePanel(
 
             CanvasSection(
                 exportScale = exportScale,
+                backgroundColor = canvasBackgroundColor,
                 availableColors = presetColors + customColors,
                 onExportScaleChange = onExportScaleChange,
-                onExport = onExport
+                onExport = onExport,
+                onBackgroundColorChange = { onCanvasBackgroundColorChange(it) },
             )
 
             Divider(
@@ -256,8 +264,8 @@ fun SidePanel(
                 )
                 CheckboxRow(
                     text = "Constrain edge points",
-                    checked = AppState.constrainEdgePoints,
-                    onCheckedChange = { AppState.constrainEdgePoints = it },
+                    checked = constrainEdgePoints,
+                    onCheckedChange = { onToggleConstrainingEdgePoints() },
                 )
             }
 
@@ -268,7 +276,7 @@ fun SidePanel(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
-                AppState.colorPoints.forEachIndexed() { rowIdx, colorPoints ->
+                meshPoints.forEachIndexed { rowIdx, colorPoints ->
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
@@ -285,17 +293,10 @@ fun SidePanel(
                                     y = point.first.y,
                                     constrainX = AppState.constrainEdgePoints && (colIdx == 0 || colIdx == colorPoints.size - 1),
                                     constrainY = AppState.constrainEdgePoints && (rowIdx == 0 || rowIdx == AppState.colorPoints.size - 1),
-                                    colorInt = point.second,
+                                    colorId = point.second,
                                     availableColors = presetColors + customColors,
                                     onUpdatePoint = { (nextOffset, nextColor) ->
-                                        AppState.updateColorPoint(
-                                            col = colIdx,
-                                            row = rowIdx,
-                                            point = Pair(
-                                                Offset(x = nextOffset.x, y = nextOffset.y),
-                                                nextColor
-                                            )
-                                        )
+                                        onUpdateMeshPoint(rowIdx, colIdx, Pair(Offset(x = nextOffset.x, y = nextOffset.y), nextColor))
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -451,9 +452,9 @@ private fun ColorPointRow(
     y: Float,
     constrainX: Boolean,
     constrainY: Boolean,
-    colorInt: Int,
+    colorId: Long,
     availableColors: List<SavedColor> = emptyList(),
-    onUpdatePoint: (Pair<Offset, Int>) -> Unit = { _ -> },
+    onUpdatePoint: (Pair<Offset, Long>) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -462,7 +463,7 @@ private fun ColorPointRow(
         modifier = modifier
     ) {
         ColorDropdown(
-            selectedColor = colorInt,
+            selectedColorId = colorId,
             colors = availableColors,
             onSelected = { onUpdatePoint(Pair(Offset(x = x, y = y), it)) }
         )
@@ -470,14 +471,14 @@ private fun ColorPointRow(
             value = x,
             enabled = !constrainX,
             paramName = "X",
-            onUpdate = { onUpdatePoint(Pair(Offset(x = it, y = y), colorInt)) },
+            onUpdate = { onUpdatePoint(Pair(Offset(x = it, y = y), colorId)) },
             modifier = Modifier.weight(1f)
         )
         OffsetInputField(
             value = y,
             enabled = !constrainY,
             paramName = "Y",
-            onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), colorInt)) },
+            onUpdate = { onUpdatePoint(Pair(Offset(x = x, y = it), colorId)) },
             modifier = Modifier.weight(1f)
         )
     }
@@ -488,8 +489,10 @@ private fun ColorPointRow(
 private fun CanvasSection(
     exportScale: Int,
     availableColors: List<SavedColor> = emptyList(),
+    backgroundColor: Long,
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
+    onBackgroundColorChange: (Long) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val canvasWidthMode by AppState.canvasWidthMode.collectAsState()
@@ -511,10 +514,10 @@ private fun CanvasSection(
             modifier = Modifier.fillMaxWidth()
         ) {
             ColorDropdown(
-                selectedColor = AppState.canvasBackgroundColor,
+                selectedColorId = backgroundColor,
                 colors = availableColors,
                 allowTransparency = true,
-                onSelected = { AppState.canvasBackgroundColor = it }
+                onSelected = { onBackgroundColorChange(it) }
             )
             DimensionInputField(
                 value = canvasWidth,

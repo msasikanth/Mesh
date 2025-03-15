@@ -19,6 +19,7 @@ import des.c5inco.mesh.data.AppDataRepository
 import des.c5inco.mesh.data.AppState
 import des.c5inco.mesh.ui.GradientCanvas
 import des.c5inco.mesh.ui.SidePanel
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import model.SavedColor
 
@@ -29,7 +30,10 @@ fun App(
 ) {
     val presetColors by repository.getPresetColors().collectAsState(initial = emptyList())
     val customColors by repository.getCustomColors().collectAsState(initial = emptyList())
+    val canvasBackgroundColor by configuration.canvasBackgroundColor.collectAsState()
     val uiState by configuration.uiState.collectAsState()
+    val resolution by configuration.resolution.collectAsState()
+    val meshPoints by configuration.meshPoints.collectAsState()
 
     Row(
         Modifier.fillMaxSize()
@@ -42,17 +46,30 @@ fun App(
         GradientCanvas(
             exportGraphicsLayer = exportGraphicsLayer,
             exportScale = exportScale,
+            resolution = resolution,
+            availableColors = presetColors + customColors,
+            meshPoints = meshPoints,
             showPoints = uiState.showPoints,
             onTogglePoints = { configuration.toggleShowingPoints() },
-            onPointDrag = { selectedColorPoint = it },
+            onPointDragStartEnd = { selectedColorPoint = it },
+            onPointDrag = { row, col, point ->
+                configuration.updateMeshPoint(row, col, point)
+            },
             modifier = Modifier.weight(1f)
         )
         SidePanel(
             exportScale = exportScale,
             presetColors = presetColors,
             customColors = customColors,
+            canvasBackgroundColor = canvasBackgroundColor,
+            meshPoints = meshPoints,
             showPoints = uiState.showPoints,
+            constrainEdgePoints = uiState.constrainEdgePoints,
+            onUpdateMeshPoint = { row, col, point ->
+                configuration.updateMeshPoint(row, col, point)
+            },
             onTogglePoints = { configuration.toggleShowingPoints() },
+            onToggleConstrainingEdgePoints = { configuration.toggleConstrainingEdgePoints() },
             onExportScaleChange = { exportScale = it },
             onExport = {
                 coroutineScope.launch {
@@ -61,6 +78,9 @@ fun App(
 
                     AppState.saveImage(image = awtImage, scale = exportScale)
                 }
+            },
+            onCanvasBackgroundColorChange = {
+                configuration.canvasBackgroundColor.update { it }
             },
             onAddColor = {
                 repository.addColor(
