@@ -62,7 +62,9 @@ private val defaultColorPoints = listOf(
 class AppConfiguration(
     private val repository: AppDataRepository,
     canvasWidthMode: DimensionMode = DimensionMode.Fill,
+    canvasWidth: Int = 0,
     canvasHeightMode: DimensionMode = DimensionMode.Fill,
+    canvasHeight: Int = 0,
     resolution: Int = 10,
     blurLevel: Float = 0f,
     totalRows: Int = 3,
@@ -104,8 +106,10 @@ class AppConfiguration(
     }.stateIn(scope, SharingStarted.Lazily, emptyList())
 
     var canvasBackgroundColor = MutableStateFlow(-1L)
-    val canvasWidthMode = MutableStateFlow(DimensionMode.Fill)
-    val canvasHeightMode = MutableStateFlow(DimensionMode.Fill)
+    val canvasWidthMode = MutableStateFlow(canvasWidthMode)
+    var canvasWidth = MutableStateFlow(canvasWidth)
+    val canvasHeightMode = MutableStateFlow(canvasHeightMode)
+    val canvasHeight = MutableStateFlow(canvasHeight)
     var resolution = MutableStateFlow(resolution)
     var blurLevel = MutableStateFlow(blurLevel)
     val totalRows = MutableStateFlow(totalRows)
@@ -129,6 +133,26 @@ class AppConfiguration(
 
     fun deleteColor(color: SavedColor) {
         repository.deleteColor(color)
+    }
+
+    fun updateCanvasWidthMode() {
+        canvasWidthMode.update {
+            if (it == DimensionMode.Fixed) DimensionMode.Fill else DimensionMode.Fixed
+        }
+    }
+
+    fun updateCanvasWidth(width: Int) {
+        canvasWidth.update { width }
+    }
+
+    fun updateCanvasHeightMode() {
+        canvasHeightMode.update {
+            if (it == DimensionMode.Fixed) DimensionMode.Fill else DimensionMode.Fixed
+        }
+    }
+
+    fun updateCanvasHeight(height: Int) {
+        canvasHeight.update { height }
     }
 
     fun updateBlurLevel(level: Float) {

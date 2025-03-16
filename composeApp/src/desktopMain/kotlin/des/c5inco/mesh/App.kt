@@ -31,6 +31,10 @@ fun App(
     val canvasBackgroundColor by configuration.canvasBackgroundColor.collectAsState()
     val uiState by configuration.uiState.collectAsState()
     val resolution by configuration.resolution.collectAsState()
+    val canvasWidthMode by configuration.canvasWidthMode.collectAsState()
+    val canvasWidth by configuration.canvasWidth.collectAsState()
+    val canvasHeightMode by configuration.canvasHeightMode.collectAsState()
+    val canvasHeight by configuration.canvasHeight.collectAsState()
     val blurLevel by configuration.blurLevel.collectAsState()
     val totalRows by configuration.totalRows.collectAsState()
     val totalCols by configuration.totalCols.collectAsState()
@@ -47,11 +51,19 @@ fun App(
             exportGraphicsLayer = exportGraphicsLayer,
             exportScale = exportScale,
             resolution = resolution,
+            canvasWidthMode = canvasWidthMode,
+            canvasWidth = canvasWidth,
+            canvasHeightMode = canvasHeightMode,
+            canvasHeight = canvasHeight,
             blurLevel = blurLevel,
             availableColors = availableColors,
             canvasBackgroundColor = canvasBackgroundColor,
             meshPoints = configuration.meshPoints,
             showPoints = uiState.showPoints,
+            onResize = { width, height ->
+                configuration.updateCanvasWidth(width)
+                configuration.updateCanvasHeight(height)
+            },
             onTogglePoints = { configuration.toggleShowingPoints() },
             onPointDragStartEnd = { selectedColorPoint = it },
             onPointDrag = { row, col, point ->
@@ -64,12 +76,20 @@ fun App(
             presetColors = presetColors,
             customColors = customColors,
             canvasBackgroundColor = canvasBackgroundColor,
+            canvasWidthMode = canvasWidthMode,
+            canvasWidth = canvasWidth,
+            canvasHeightMode = canvasHeightMode,
+            canvasHeight = canvasHeight,
             blurLevel = blurLevel,
             totalRows = totalRows,
             totalCols = totalCols,
             meshPoints = configuration.meshPoints,
             showPoints = uiState.showPoints,
             constrainEdgePoints = uiState.constrainEdgePoints,
+            onCanvasWidthModeChange = configuration::updateCanvasWidthMode,
+            onCanvasWidthChange = configuration::updateCanvasWidth,
+            onCanvasHeightModeChange = configuration::updateCanvasHeightMode,
+            onCanvasHeightChange = configuration::updateCanvasHeight,
             onBlurLevelChange = configuration::updateBlurLevel,
             onUpdateTotalRows = configuration::updateTotalRows,
             onUpdateTotalCols = configuration::updateTotalCols,

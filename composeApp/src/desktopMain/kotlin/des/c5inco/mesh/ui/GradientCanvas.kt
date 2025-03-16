@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -40,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.PointCursor
 import des.c5inco.mesh.common.meshGradient
 import des.c5inco.mesh.data.AppConfiguration.Companion.MAX_BLUR_LEVEL
-import des.c5inco.mesh.data.AppState
 import des.c5inco.mesh.data.DimensionMode
 import des.c5inco.mesh.data.Notifications
 import des.c5inco.mesh.ui.components.CanvasSnackbar
@@ -60,23 +58,21 @@ fun GradientCanvas(
     exportGraphicsLayer: GraphicsLayer,
     exportScale: Int,
     resolution: Int,
+    canvasWidthMode: DimensionMode,
+    canvasWidth: Int,
+    canvasHeightMode: DimensionMode,
+    canvasHeight: Int,
     blurLevel: Float = 0f,
     meshPoints: List<List<Pair<Offset, Long>>>,
     showPoints: Boolean,
     canvasBackgroundColor: Long,
     availableColors: List<SavedColor>,
+    onResize: (Int, Int) -> Unit = { _, _ -> },
     onTogglePoints: () -> Unit = {},
     onPointDragStartEnd: (Pair<Int, Int>?) -> Unit = { _ -> },
     onPointDrag: (row: Int, col: Int, point: Pair<Offset, Long>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = remember { AppState.colorPoints }
-
-    val canvasWidthMode by AppState.canvasWidthMode.collectAsState()
-    val canvasHeightMode by AppState.canvasHeightMode.collectAsState()
-    var canvasWidth by remember { AppState::canvasWidth }
-    var canvasHeight by remember { AppState::canvasHeight }
-
     val notifications = remember { mutableStateListOf<String>() }
 
     val exportSize by derivedStateOf {
@@ -98,8 +94,7 @@ fun GradientCanvas(
             val dpWidth = coordinates.size.width.toDp()
             val dpHeight = coordinates.size.height.toDp()
 
-            canvasWidth = dpWidth.value.toInt()
-            canvasHeight = dpHeight.value.toInt()
+            onResize(dpWidth.value.toInt(), dpHeight.value.toInt())
         }
     }
 

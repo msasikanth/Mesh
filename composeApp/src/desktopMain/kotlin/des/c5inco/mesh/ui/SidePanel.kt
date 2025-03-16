@@ -22,7 +22,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import des.c5inco.mesh.common.toColor
 import des.c5inco.mesh.common.toHexStringNoHash
-import des.c5inco.mesh.data.AppState
 import des.c5inco.mesh.data.DimensionMode
 import des.c5inco.mesh.ui.components.ColorDropdown
 import des.c5inco.mesh.ui.components.ColorSwatch
@@ -86,12 +84,20 @@ fun SidePanel(
     presetColors: List<SavedColor> = emptyList(),
     customColors: List<SavedColor> = emptyList(),
     canvasBackgroundColor: Long,
+    canvasWidthMode: DimensionMode,
+    canvasWidth: Int,
+    canvasHeightMode: DimensionMode,
+    canvasHeight: Int,
     blurLevel: Float = 0f,
     totalRows: Int,
     totalCols: Int,
     meshPoints: List<List<Pair<Offset, Long>>> = emptyList(),
     showPoints: Boolean,
     constrainEdgePoints: Boolean,
+    onCanvasWidthModeChange: () -> Unit = {},
+    onCanvasWidthChange: (Int) -> Unit = {},
+    onCanvasHeightModeChange: () -> Unit = {},
+    onCanvasHeightChange: (Int) -> Unit = {},
     onBlurLevelChange: (Float) -> Unit = {},
     onUpdateTotalRows: (Int) -> Unit = {},
     onUpdateTotalCols: (Int) -> Unit = {},
@@ -190,11 +196,19 @@ fun SidePanel(
             CanvasSection(
                 exportScale = exportScale,
                 backgroundColor = canvasBackgroundColor,
+                canvasWidthMode = canvasWidthMode,
+                canvasWidth = canvasWidth,
+                canvasHeightMode = canvasHeightMode,
+                canvasHeight = canvasHeight,
                 blurLevel = blurLevel,
                 availableColors = presetColors + customColors,
                 onExportScaleChange = onExportScaleChange,
                 onExport = onExport,
                 onBackgroundColorChange = { onCanvasBackgroundColorChange(it) },
+                onCanvasWidthModeChange = onCanvasWidthModeChange,
+                onCanvasWidthChange = onCanvasWidthChange,
+                onCanvasHeightModeChange = onCanvasHeightModeChange,
+                onCanvasHeightChange = onCanvasHeightChange,
                 onBlurLevelChange = { onBlurLevelChange(it) }
             )
 
@@ -493,17 +507,21 @@ private fun CanvasSection(
     exportScale: Int,
     availableColors: List<SavedColor> = emptyList(),
     backgroundColor: Long,
+    canvasWidthMode: DimensionMode,
+    canvasWidth: Int,
+    canvasHeightMode: DimensionMode,
+    canvasHeight: Int,
     blurLevel: Float,
     onExportScaleChange: (Int) -> Unit,
     onExport: () -> Unit = {},
     onBackgroundColorChange: (Long) -> Unit = {},
+    onCanvasWidthModeChange: () -> Unit = {},
+    onCanvasWidthChange: (Int) -> Unit = {},
+    onCanvasHeightModeChange: () -> Unit = {},
+    onCanvasHeightChange: (Int) -> Unit = {},
     onBlurLevelChange: (Float) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val canvasWidthMode by AppState.canvasWidthMode.collectAsState()
-    val canvasHeightMode by AppState.canvasHeightMode.collectAsState()
-    val canvasWidth by remember { AppState::canvasWidth }
-    val canvasHeight by remember { AppState::canvasHeight }
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -534,7 +552,7 @@ private fun CanvasSection(
                     }) {
                         IconButton(
                             onClick = {
-                                AppState.updateCanvasWidthMode()
+                                onCanvasWidthModeChange()
                                 focusManager.clearFocus()
                             }
                         ) {
@@ -545,7 +563,7 @@ private fun CanvasSection(
                         }
                     }
                 },
-                onUpdate = { AppState.canvasWidth = it },
+                onUpdate = onCanvasWidthChange,
                 modifier = Modifier.weight(1f)
             )
             DimensionInputField(
@@ -559,7 +577,7 @@ private fun CanvasSection(
                     }) {
                         IconButton(
                             onClick = {
-                                AppState.updateCanvasHeightMode()
+                                onCanvasHeightModeChange()
                                 focusManager.clearFocus()
                             }
                         ) {
@@ -570,7 +588,7 @@ private fun CanvasSection(
                         }
                     }
                 },
-                onUpdate = { AppState.canvasHeight = it },
+                onUpdate = onCanvasHeightChange,
                 modifier = Modifier.weight(1f)
             )
         }
