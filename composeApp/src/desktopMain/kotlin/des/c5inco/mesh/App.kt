@@ -27,7 +27,7 @@ fun App(
 ) {
     val presetColors by configuration.presetColors.collectAsState(initial = emptyList())
     val customColors by configuration.customColors.collectAsState(initial = emptyList())
-    val availableColors by configuration.availableColors.collectAsState()
+    val availableColors by configuration.availableColors.collectAsState(initial = emptyList())
     val canvasBackgroundColor by configuration.canvasBackgroundColor.collectAsState()
     val uiState by configuration.uiState.collectAsState()
     val resolution by configuration.resolution.collectAsState()

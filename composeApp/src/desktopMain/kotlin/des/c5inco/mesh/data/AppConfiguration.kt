@@ -12,10 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import model.MeshPoint
@@ -97,13 +94,7 @@ class AppConfiguration(
 
     val presetColors = repository.getPresetColors()
     val customColors = repository.getCustomColors()
-
-    val availableColors = combine(
-        presetColors,
-        customColors
-    ) { preset, custom ->
-        preset + custom
-    }.stateIn(scope, SharingStarted.Lazily, emptyList())
+    val availableColors = repository.getAllColors()
 
     var canvasBackgroundColor = MutableStateFlow(-1L)
     val canvasWidthMode = MutableStateFlow(canvasWidthMode)
@@ -174,13 +165,13 @@ class AppConfiguration(
     }
 
     private fun generateMeshPoints() {
-        meshPoints.clear()
         scope.launch {
-            val availableColorsAsList = availableColors.first()
+            meshPoints.clear()
+            val allColors = availableColors.first()
 
             repeat(totalRows.value) { rowIdx ->
                 val newColorIndex =
-                    availableColorsAsList[rowIdx % availableColorsAsList.size].uid
+                    allColors[rowIdx % allColors.size].uid
 
                 val newPoints = mutableListOf<Pair<Offset, Long>>()
 
