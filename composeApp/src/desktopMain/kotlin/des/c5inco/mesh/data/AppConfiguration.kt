@@ -19,6 +19,7 @@ import model.MeshPoint
 import model.SavedColor
 import model.findColor
 import model.toOffsetGrid
+import model.toSavedMeshPoints
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.awt.image.BufferedImage
@@ -105,11 +106,21 @@ class AppConfiguration(
     var blurLevel = MutableStateFlow(blurLevel)
     val totalRows = MutableStateFlow(totalRows)
     var totalCols = MutableStateFlow(totalCols)
-    var meshPoints = if (incomingMeshPoints.isEmpty()) {
-        defaultColorPoints
-    } else {
-        incomingMeshPoints.toOffsetGrid()
-    }.toMutableStateList()
+
+    var meshPoints = mutableListOf<List<Pair<Offset, Long>>>().toMutableStateList()
+        private set
+
+    init {
+        scope.launch {
+            val initialMeshPoints = repository.getMeshPoints().first()
+            println("Loaded points: $initialMeshPoints")
+            meshPoints = if (initialMeshPoints.isEmpty()) {
+                    defaultColorPoints
+                } else {
+                    initialMeshPoints.toOffsetGrid()
+                }.toMutableStateList()
+        }
+    }
 
     val uiState = MutableStateFlow(
         AppUiState(
@@ -239,6 +250,12 @@ class AppConfiguration(
         }
         meshPoints.clear()
         meshPoints.addAll(newPoints)
+    }
+
+    fun saveMeshPoints() {
+        val points = meshPoints.toSavedMeshPoints()
+        println("Saved: $points")
+        repository.saveMeshPoints(points)
     }
 
     fun removeColorFromMeshPoints(colorToRemove: Long) {

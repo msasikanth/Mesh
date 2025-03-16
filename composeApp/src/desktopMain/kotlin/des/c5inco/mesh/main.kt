@@ -12,27 +12,41 @@ import org.jetbrains.jewel.intui.standalone.theme.darkThemeDefinition
 import org.jetbrains.jewel.intui.standalone.theme.default
 import org.jetbrains.jewel.ui.ComponentStyling
 
-fun main() = application {
-    val configuration = AppConfiguration(
-        repository = AppDataRepository(),
-    )
-    val themeDefinition = JewelTheme.darkThemeDefinition()
+fun main() {
+    System.setProperty("apple.awt.application.name", "Mesh")
 
-    Window(
-        state = rememberWindowState(
+    application {
+        val configuration = AppConfiguration(
+            repository = AppDataRepository(),
+        )
+        val windowState = rememberWindowState(
             width = 1024.dp,
             height = 768.dp
-        ),
-        onCloseRequest = ::exitApplication,
-        title = "Mesh",
-    ) {
-        IntUiTheme(
-            theme = themeDefinition,
-            styling = ComponentStyling.default()
+        )
+        val themeDefinition = JewelTheme.darkThemeDefinition()
+
+        Window(
+            state = windowState,
+            onCloseRequest = {
+                shutdown(configuration)
+                exitApplication()
+            },
+            title = "Mesh",
         ) {
-            App(
-                configuration = configuration,
-            )
+            IntUiTheme(
+                theme = themeDefinition,
+                styling = ComponentStyling.default()
+            ) {
+                App(
+                    configuration = configuration,
+                )
+            }
         }
     }
+}
+
+private fun shutdown(
+    configuration: AppConfiguration
+) {
+    configuration.saveMeshPoints()
 }

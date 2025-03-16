@@ -44,3 +44,21 @@ fun List<MeshPoint>.toOffsetGrid(): List<List<Pair<Offset, Long>>> {
     // Convert the mutable lists to immutable lists.
     return grid.map { it.toList() }.toList()
 }
+
+fun List<List<Pair<Offset, Long>>>.toSavedMeshPoints(): List<MeshPoint> {
+    val meshPoints = mutableListOf<MeshPoint>()
+    this.forEachIndexed { rowIndex, row ->
+        row.forEachIndexed { colIndex, pair ->
+            meshPoints.add(
+                MeshPoint(
+                    row = rowIndex,
+                    col = colIndex,
+                    x = pair.first.x,
+                    y = pair.first.y,
+                    savedColorId = pair.second
+                )
+            )
+        }
+    }
+    return meshPoints
+}
