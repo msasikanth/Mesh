@@ -42,9 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import data.DimensionMode
 import des.c5inco.mesh.common.toColor
 import des.c5inco.mesh.common.toHexStringNoHash
-import des.c5inco.mesh.data.DimensionMode
 import des.c5inco.mesh.ui.components.ColorDropdown
 import des.c5inco.mesh.ui.components.ColorSwatch
 import des.c5inco.mesh.ui.components.DimensionInputField

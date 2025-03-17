@@ -36,10 +36,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import data.DimensionMode
 import des.c5inco.mesh.common.PointCursor
 import des.c5inco.mesh.common.meshGradient
 import des.c5inco.mesh.data.AppConfiguration.Companion.MAX_BLUR_LEVEL
-import des.c5inco.mesh.data.DimensionMode
 import des.c5inco.mesh.data.Notifications
 import des.c5inco.mesh.ui.components.CanvasSnackbar
 import kotlinx.coroutines.Dispatchers

@@ -48,5 +48,6 @@ fun main() {
 private fun shutdown(
     configuration: AppConfiguration
 ) {
+    configuration.saveMeshState()
     configuration.saveMeshPoints()
 }

@@ -7,6 +7,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.asClassName
+import data.DimensionMode
 import des.c5inco.mesh.common.toHexStringNoHash
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import model.MeshPoint
 import model.SavedColor
 import model.findColor
 import model.toOffsetGrid
@@ -30,11 +30,6 @@ data class AppUiState(
     val showPoints: Boolean = false,
     val constrainEdgePoints: Boolean = true,
 )
-
-enum class DimensionMode {
-    Fixed,
-    Fill
-}
 
 private val defaultColorPoints = listOf(
     listOf(
@@ -59,15 +54,6 @@ private val defaultColorPoints = listOf(
 
 class AppConfiguration(
     private val repository: AppDataRepository,
-    canvasWidthMode: DimensionMode = DimensionMode.Fill,
-    canvasWidth: Int = 0,
-    canvasHeightMode: DimensionMode = DimensionMode.Fill,
-    canvasHeight: Int = 0,
-    resolution: Int = 10,
-    blurLevel: Float = 0f,
-    totalRows: Int = 3,
-    totalCols: Int = 4,
-    incomingMeshPoints: List<MeshPoint> = emptyList(),
     showPoints: Boolean = false,
     private var constrainEdgePoints: Boolean = true,
 ) {
@@ -98,14 +84,8 @@ class AppConfiguration(
     val availableColors = repository.getAllColors()
 
     var canvasBackgroundColor = MutableStateFlow(-1L)
-    val canvasWidthMode = MutableStateFlow(canvasWidthMode)
-    var canvasWidth = MutableStateFlow(canvasWidth)
-    val canvasHeightMode = MutableStateFlow(canvasHeightMode)
-    val canvasHeight = MutableStateFlow(canvasHeight)
-    var resolution = MutableStateFlow(resolution)
-    var blurLevel = MutableStateFlow(blurLevel)
-    val totalRows = MutableStateFlow(totalRows)
-    var totalCols = MutableStateFlow(totalCols)
+
+    var meshState = MutableStateFlow(repository.loadMeshState())
 
     var meshPoints = mutableListOf<List<Pair<Offset, Long>>>().toMutableStateList()
         private set
@@ -138,27 +118,41 @@ class AppConfiguration(
     }
 
     fun updateCanvasWidthMode() {
-        canvasWidthMode.update {
-            if (it == DimensionMode.Fixed) DimensionMode.Fill else DimensionMode.Fixed
+        meshState.update {
+            val current = it.canvasWidthMode
+            it.copy(
+                canvasWidthMode = if (current == DimensionMode.Fixed) DimensionMode.Fill else DimensionMode.Fixed
+            )
         }
     }
 
     fun updateCanvasWidth(width: Int) {
-        canvasWidth.update { width }
+        meshState.update {
+            it.copy(canvasWidth = width)
+        }
     }
 
     fun updateCanvasHeightMode() {
-        canvasHeightMode.update {
-            if (it == DimensionMode.Fixed) DimensionMode.Fill else DimensionMode.Fixed
+        meshState.update {
+            val current = it.canvasHeightMode
+            it.copy(
+                canvasHeightMode = if (current == DimensionMode.Fixed) DimensionMode.Fill else DimensionMode.Fixed
+            )
         }
     }
 
     fun updateCanvasHeight(height: Int) {
-        canvasHeight.update { height }
+        meshState.update {
+            it.copy(canvasHeight = height)
+        }
     }
 
     fun updateBlurLevel(level: Float) {
-        blurLevel.update { level }
+        meshState.update {
+            it.copy(
+                blurLevel = level
+            )
+        }
     }
 
     fun updateCanvasBackgroundColor(color: Long) {
@@ -166,33 +160,42 @@ class AppConfiguration(
     }
 
     fun updateTotalRows(rows: Int) {
-        totalRows.update { rows.coerceIn(2, 10) }
+        meshState.update {
+            it.copy(rows = rows.coerceIn(2, 10))
+        }
         generateMeshPoints()
     }
 
     fun updateTotalCols(cols: Int) {
-        totalCols.update { cols.coerceIn(2, 10) }
+        meshState.update {
+            it.copy(cols = cols.coerceIn(2, 10))
+        }
         generateMeshPoints()
+    }
+
+    fun saveMeshState() {
+        repository.saveMeshState(meshState.value)
     }
 
     private fun generateMeshPoints() {
         scope.launch {
             meshPoints.clear()
             val allColors = availableColors.first()
+            val currentMeshState = meshState.value
 
-            repeat(totalRows.value) { rowIdx ->
+            repeat(currentMeshState.rows) { rowIdx ->
                 val newColorIndex =
                     allColors[rowIdx % allColors.size].uid
 
                 val newPoints = mutableListOf<Pair<Offset, Long>>()
 
                 // Calculate the Y position for this row
-                val yPosition = rowIdx.toFloat() / (totalRows.value - 1)
+                val yPosition = rowIdx.toFloat() / (currentMeshState.rows - 1)
 
                 // Iterate through columns to create points
-                repeat(totalCols.value) { colIdx ->
+                repeat(currentMeshState.cols) { colIdx ->
                     // Calculate the X position for this column
-                    val xPosition = colIdx.toFloat() / (totalCols.value - 1)
+                    val xPosition = colIdx.toFloat() / (currentMeshState.cols - 1)
 
                     newPoints.add(
                         Pair(Offset(xPosition, yPosition), newColorIndex)
@@ -230,16 +233,17 @@ class AppConfiguration(
     }
 
     fun distributeMeshPointsEvenly() {
+        val currentMeshState = meshState.value
         val newPoints = meshPoints.mapIndexed { rowIdx, currentPoints ->
             val newPoints = mutableListOf<Pair<Offset, Long>>()
 
             // Calculate the Y position for this row
-            val yPosition = rowIdx.toFloat() / (totalRows.value - 1)
+            val yPosition = rowIdx.toFloat() / (currentMeshState.rows - 1)
 
             // Iterate through columns to create points
-            repeat(totalCols.value) { colIdx ->
+            repeat(currentMeshState.cols) { colIdx ->
                 // Calculate the X position for this column
-                val xPosition = colIdx.toFloat() / (totalCols.value - 1)
+                val xPosition = colIdx.toFloat() / (currentMeshState.cols - 1)
 
                 newPoints.add(
                     Pair(Offset(xPosition, yPosition), currentPoints[colIdx].second)

@@ -30,14 +30,7 @@ fun App(
     val availableColors by configuration.availableColors.collectAsState(initial = emptyList())
     val canvasBackgroundColor by configuration.canvasBackgroundColor.collectAsState()
     val uiState by configuration.uiState.collectAsState()
-    val resolution by configuration.resolution.collectAsState()
-    val canvasWidthMode by configuration.canvasWidthMode.collectAsState()
-    val canvasWidth by configuration.canvasWidth.collectAsState()
-    val canvasHeightMode by configuration.canvasHeightMode.collectAsState()
-    val canvasHeight by configuration.canvasHeight.collectAsState()
-    val blurLevel by configuration.blurLevel.collectAsState()
-    val totalRows by configuration.totalRows.collectAsState()
-    val totalCols by configuration.totalCols.collectAsState()
+    val meshState by configuration.meshState.collectAsState()
 
     Row(
         Modifier.fillMaxSize()
@@ -50,12 +43,12 @@ fun App(
         GradientCanvas(
             exportGraphicsLayer = exportGraphicsLayer,
             exportScale = exportScale,
-            resolution = resolution,
-            canvasWidthMode = canvasWidthMode,
-            canvasWidth = canvasWidth,
-            canvasHeightMode = canvasHeightMode,
-            canvasHeight = canvasHeight,
-            blurLevel = blurLevel,
+            resolution = meshState.resolution,
+            canvasWidthMode = meshState.canvasWidthMode,
+            canvasWidth = meshState.canvasWidth,
+            canvasHeightMode = meshState.canvasHeightMode,
+            canvasHeight = meshState.canvasHeight,
+            blurLevel = meshState.blurLevel,
             availableColors = availableColors,
             canvasBackgroundColor = canvasBackgroundColor,
             meshPoints = configuration.meshPoints,
@@ -76,13 +69,13 @@ fun App(
             presetColors = presetColors,
             customColors = customColors,
             canvasBackgroundColor = canvasBackgroundColor,
-            canvasWidthMode = canvasWidthMode,
-            canvasWidth = canvasWidth,
-            canvasHeightMode = canvasHeightMode,
-            canvasHeight = canvasHeight,
-            blurLevel = blurLevel,
-            totalRows = totalRows,
-            totalCols = totalCols,
+            canvasWidthMode = meshState.canvasWidthMode,
+            canvasWidth = meshState.canvasWidth,
+            canvasHeightMode = meshState.canvasHeightMode,
+            canvasHeight = meshState.canvasHeight,
+            blurLevel = meshState.blurLevel,
+            totalRows = meshState.rows,
+            totalCols = meshState.cols,
             meshPoints = configuration.meshPoints,
             showPoints = uiState.showPoints,
             constrainEdgePoints = uiState.constrainEdgePoints,

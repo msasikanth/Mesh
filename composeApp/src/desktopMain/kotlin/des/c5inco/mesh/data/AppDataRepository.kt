@@ -1,6 +1,7 @@
 package des.c5inco.mesh.data
 
 import androidx.compose.ui.graphics.Color
+import data.MeshState
 import data.getRoomDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +62,14 @@ class AppDataRepository {
         scope.launch {
             database.savedColorDao().delete(color)
         }
+    }
+
+    fun loadMeshState(): MeshState {
+        return MeshStateManager.loadState()
+    }
+
+    fun saveMeshState(state: MeshState) {
+        MeshStateManager.saveState(state)
     }
 
     fun getMeshPoints(): Flow<List<MeshPoint>> {
