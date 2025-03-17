@@ -256,7 +256,7 @@ class AppConfiguration(
         meshPoints.addAll(newPoints)
     }
 
-    fun saveMeshPoints() {
+    suspend fun saveMeshPoints() {
         val points = meshPoints.toSavedMeshPoints()
         println("Saved: $points")
         repository.saveMeshPoints(points)

@@ -6,6 +6,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import des.c5inco.mesh.data.AppConfiguration
 import des.c5inco.mesh.data.AppDataRepository
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.intui.standalone.theme.IntUiTheme
 import org.jetbrains.jewel.intui.standalone.theme.darkThemeDefinition
@@ -23,12 +24,16 @@ fun main() {
             width = 1024.dp,
             height = 768.dp
         )
+
+        Runtime.getRuntime().addShutdownHook(Thread {
+            shutdown(configuration)
+        })
+
         val themeDefinition = JewelTheme.darkThemeDefinition()
 
         Window(
             state = windowState,
             onCloseRequest = {
-                shutdown(configuration)
                 exitApplication()
             },
             title = "Mesh",
@@ -49,5 +54,7 @@ private fun shutdown(
     configuration: AppConfiguration
 ) {
     configuration.saveMeshState()
-    configuration.saveMeshPoints()
+    runBlocking {
+        configuration.saveMeshPoints()
+    }
 }

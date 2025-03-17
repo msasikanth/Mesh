@@ -76,10 +76,8 @@ class AppDataRepository {
         return database.meshPointDao().getAll()
     }
 
-    fun saveMeshPoints(points: List<MeshPoint>) {
-        scope.launch {
-            database.meshPointDao().deleteAll()
-            database.meshPointDao().insertAll(*points.toTypedArray())
-        }
+    suspend fun saveMeshPoints(points: List<MeshPoint>) {
+        database.meshPointDao().deleteAll()
+        database.meshPointDao().insertAll(*points.toTypedArray())
     }
 }
