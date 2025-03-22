@@ -34,7 +34,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import des.c5inco.mesh.common.toHexStringNoHash
-import des.c5inco.mesh.ui.data.AppState
+import model.SavedColor
+import model.toColor
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.foundation.theme.LocalContentColor
 import org.jetbrains.jewel.foundation.theme.LocalTextStyle
@@ -51,10 +52,10 @@ import org.jetbrains.jewel.ui.util.thenIf
 
 @Composable
 fun ColorDropdown(
-    selectedColor: Int,
-    colors: List<Color>,
+    selectedColorId: Long,
+    colors: List<SavedColor>,
     allowTransparency: Boolean = false,
-    onSelected: (Int) -> Unit,
+    onSelected: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -65,10 +66,10 @@ fun ColorDropdown(
         menuContent = {
             if (allowTransparency) {
                 selectableItem(
-                    selected = selectedColor == -1,
+                    selected = selectedColorId == -1L,
                     onClick = {
                         focusManager.clearFocus()
-                        onSelected(-1)
+                        onSelected(-1L)
                     }
                 ) {
                     Row(
@@ -80,27 +81,29 @@ fun ColorDropdown(
                     }
                 }
             }
-            colors.forEachIndexed { index, color ->
+            colors.forEach { color ->
+                val c = color.toColor()
                 selectableItem(
-                    selected = selectedColor == index,
+                    selected = selectedColorId == color.uid,
                     onClick = {
                         focusManager.clearFocus()
-                        onSelected(index)
+                        onSelected(color.uid)
                     },
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        ColorSwatch(color = color)
+                        ColorSwatch(color = c)
                         Spacer(Modifier.width(8.dp))
-                        Text(color.toHexStringNoHash(false))
+                        Text(c.toHexStringNoHash(false))
                     }
                 }
             }
         },
     ) {
+        val foundColor = colors.find { it.uid == selectedColorId }
         ColorSwatch(
-            color = AppState.getColor(selectedColor),
+            color = foundColor?.toColor() ?: Color.Transparent,
             modifier = Modifier.padding(vertical = 5.dp, horizontal = 8.dp)
         )
     }
