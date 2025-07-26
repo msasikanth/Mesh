@@ -1,0 +1,51 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  package_deb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: zulu
+          cache: 'gradle'
+
+      - name: Package
+        run: ./gradle packageDeb
+
+  package_dmg:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: zulu
+          cache: 'gradle'
+
+      - name: Package
+        run: ./gradle packageDmg
+
+  package_exe:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: zulu
+          cache: 'gradle'
+
+      - name: Package
+        run: ./gradle packageExe
